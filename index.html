@@ -3,42 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>小工具 · 魔方公式教学</title>
+    <title>小工具 · 魔方公式速查</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
             background-color: #0f1117;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            -webkit-user-select: none;
-            user-select: none;
             touch-action: manipulation;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            color: #F0F0F5;
+            overflow: hidden;
         }
 
-        :root {
-            --cos-color-bg: #12141a;
-            --cos-vcard-color-bg: #181b24;
-            --cos-card-color-bg: #202430;
-            --cos-color-text: #f0f2f5;
-            --cos-color-text-minor: #8c93a0;
-            --cos-color-text-sub: #5f6675;
-            --cos-color-border: #2c3140;
-            --cos-color-border-minor: #262a36;
-            --cos-color-primary: #3875f6;
-            --cos-color-primary-hover: #5289f8;
-            --cos-color-primary-sub: rgba(56, 117, 246, 0.15);
-            --cos-color-tag-bg: #262b3a;
-            --cos-rounded-sm: 12px;
-            --cos-rounded-xs: 6px;
-            --cos-text-body-lg: 15px;
-            --cos-text-body: 13px;
-            --cos-text-body-sm: 11px;
-        }
-
+        /* ── 1:1 响应式容器 ── */
         .vc-component-wrapper {
             width: 100%;
             max-width: 460px;
@@ -57,417 +45,589 @@
         .vc-component-container {
             position: absolute;
             inset: 0;
-            background: var(--cos-vcard-color-bg);
-            border-radius: var(--cos-rounded-sm);
+            background: #12141a;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
-            box-sizing: border-box;
             overflow: hidden;
-            border: 1px solid var(--cos-color-border);
-            color: var(--cos-color-text);
+            border: 1px solid #232733;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
         }
 
-        .vc-component-container * {
-            box-sizing: border-box;
-        }
-
-        /* ── 表头 ─────────────────────────────────────────── */
-        .vc-component-header {
-            height: 44px;
+        /* ── 表头 ── */
+        .vc-header {
+            height: 38px;
             padding: 0 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 0.5px solid var(--cos-color-border-minor);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             background: rgba(255, 255, 255, 0.02);
             flex-shrink: 0;
-            position: relative;
             z-index: 20;
         }
 
         .vc-header-left {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .vc-header-title {
-            font-size: var(--cos-text-body-lg);
-            font-weight: 600;
-            color: var(--cos-color-text);
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #F0F0F5;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .vc-badge {
+        .vc-header-badge {
             font-size: 10px;
-            padding: 1px 6px;
+            padding: 1.5px 6px;
             border-radius: 4px;
-            background: var(--cos-color-primary-sub);
-            color: var(--cos-color-primary);
-            font-weight: 500;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
         }
 
-        .vc-header-actions {
+        .vc-header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
 
-        .vc-icon-btn {
+        .vc-header-btn {
             background: transparent;
             border: none;
-            color: var(--cos-color-text-minor);
+            color: #8c93a0;
             cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .vc-icon-btn:hover {
-            color: var(--cos-color-text);
+        .vc-header-btn:hover {
+            color: #fff;
             background: rgba(255, 255, 255, 0.08);
         }
 
-        .vc-icon-svg {
-            width: 17px;
-            height: 17px;
-            fill: currentColor;
-        }
-
-        /* 气泡提示 */
-        .vc-tips-tooltip {
-            display: none;
-            position: absolute;
-            top: 42px;
-            right: 12px;
-            width: calc(100% - 24px);
-            max-width: 320px;
-            padding: 10px 12px;
-            font-size: var(--cos-text-body-sm);
-            line-height: 1.5;
-            color: #d1d5db;
-            background: #232734;
-            border: 1px solid var(--cos-color-border);
-            border-radius: var(--cos-rounded-xs);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-        }
-
-        .vc-tips-tooltip.visible {
-            display: block;
-        }
-
-        /* ── 卡片主结构 ────────────────────────────────────── */
-        .vc-component-card-wrapper {
+        /* ── 3D 魔方视口展示区 (完全对齐 practice.vue) ── */
+        .player-section {
+            flex: 1;
+            min-height: 0;
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
-        }
-
-        /* ── 画布区 (高度约 52%) ────────────────────────────── */
-        .vc-component-demo {
-            flex: 1;
-            min-height: 0;
             position: relative;
-            overflow: hidden;
+            padding: 4px 10px 0;
+        }
+
+        .player-container {
+            flex: 1;
+            min-height: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at 50% 40%, #1a1e2b 0%, #0d0f15 100%);
-            touch-action: none;
+            position: relative;
         }
 
-        /* 3D Twisty Player 容器 */
-        twisty-player {
+        .cube-player {
             width: 100%;
             height: 100%;
-            display: grid;
+            min-width: 0;
+            min-height: 0;
         }
 
-        /* 画布浮层 1：2D 顶面状态指示器 */
-        .vc-topface-hud {
+        /* 悬浮圆形工具按钮 (左上 & 右上) */
+        .top-left-tools {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 48px;
-            height: 48px;
-            background: rgba(18, 21, 30, 0.85);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--cos-color-border);
-            border-radius: 6px;
-            padding: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            z-index: 10;
-        }
-
-        .vc-topface-hud svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* 画布浮层 2：视角旋转提示 */
-        .vc-canvas-hint {
-            position: absolute;
-            bottom: 6px;
-            left: 8px;
-            font-size: 10px;
-            color: var(--cos-color-text-sub);
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            z-index: 10;
-        }
-
-        /* 画布浮层 3：当前动作步骤 HUD */
-        .vc-step-hud {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            text-align: right;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .vc-current-move-badge {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffe600;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 2px 7px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 230, 0, 0.3);
-            display: inline-block;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        }
-
-        .vc-current-move-cn {
-            font-size: 10px;
-            color: var(--cos-color-text-minor);
-            margin-top: 2px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-        }
-
-        /* ── 操作控制区 (高度约 48%) ────────────────────────── */
-        .vc-component-operate {
-            background: var(--cos-color-bg);
-            border-top: 0.5px solid var(--cos-color-border-minor);
-            padding: 8px 12px 6px;
+            top: 4px;
+            left: 4px;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 20;
+            z-index: 10;
         }
 
-        /* 第一行：Tabs 与中英文开关 */
-        .vc-operate-row-tabs {
+        .top-right-tools {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .floating-tool-btn {
+            width: 32px;
+            height: 32px;
+            background: #1E1E24;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #F0F0F5;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .floating-tool-btn:hover {
+            background: #282b35;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .floating-tool-btn:active {
+            transform: scale(0.92);
+        }
+
+        .floating-tool-btn.active {
+            background: rgba(37, 244, 238, 0.18);
+            color: #38bdf8;
+            border-color: rgba(37, 244, 238, 0.4);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .floating-tool-btn.highlight {
+            color: #FE2C55;
+            border-color: rgba(254, 44, 85, 0.4);
+            background: rgba(254, 44, 85, 0.12);
+        }
+
+        /* ── 中间公式卡片 (Glassmorphic Formula Area) ── */
+        .formula-panel {
+            padding: 4px 10px 6px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .formula-area {
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .formula-area:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .formula-area:active {
+            transform: scale(0.995);
+        }
+
+        .formula-area.solution-active {
+            background: rgba(34, 197, 94, 0.04);
+            border-color: rgba(34, 197, 94, 0.25);
+        }
+
+        .formula-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .case-name-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #F0F0F5;
+        }
+
+        .case-group-badge {
+            font-size: 10px;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #a0a0b8;
+            font-weight: 500;
+        }
+
+        .formula-toggle-hint {
+            font-size: 10.5px;
+            color: #6B6B85;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .formula-text {
+            font-family: ui-monospace, SFMono-Regular, Monaco, Consolas, monospace;
+            font-size: 13.5px;
+            line-height: 1.35;
+            font-weight: 600;
+            color: #4ade80;
+            letter-spacing: 0.3px;
+            word-break: break-word;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 6px;
+            align-items: center;
+        }
+
+        .formula-text.scramble {
+            color: #38bdf8;
+        }
+
+        .formula-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .mode-badge {
+            font-size: 9.5px;
+            line-height: 1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .mode-badge.solution {
+            background: #4ade80;
+            color: #121212;
+        }
+
+        .mode-badge.scramble {
+            background: #38bdf8;
+            color: #121212;
+        }
+
+        .step-current-cn {
+            font-size: 10.5px;
+            color: #8c93a0;
+            font-family: -apple-system, sans-serif;
+        }
+
+        /* ── 下方控制区 (Controls Section) ── */
+        .controls-section {
+            background: #151821;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px 12px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            flex-shrink: 0;
+        }
+
+        /* 分类切换胶囊 (ControlSwitch) */
+        .control-switch {
+            display: flex;
+            gap: 4px;
+            padding: 3px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .switch-btn {
+            flex: 1;
+            height: 28px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            color: #8c93a0;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .switch-btn:hover {
+            color: #fff;
+        }
+
+        .switch-btn.active {
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(254, 44, 85, 0.35);
+            font-weight: 700;
+        }
+
+        /* 步骤 Tokens 缎带区 */
+        .formula-tokens-wrap {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
         }
 
-        .vc-tab-group {
-            display: flex;
-            background: var(--cos-card-color-bg);
-            padding: 2px;
-            border-radius: 6px;
-            border: 1px solid var(--cos-color-border-minor);
+        .formula-tokens {
             flex: 1;
-        }
-
-        .vc-tab-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            color: var(--cos-color-text-minor);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.15s;
-            text-align: center;
-        }
-
-        .vc-tab-btn.active {
-            background: var(--cos-color-primary);
-            color: #ffffff;
-            box-shadow: 0 2px 6px rgba(56, 117, 246, 0.3);
-        }
-
-        .vc-lang-btn {
-            border: 1px solid var(--cos-color-border);
-            background: var(--cos-card-color-bg);
-            color: var(--cos-color-text-minor);
-            font-size: 11px;
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.15s;
-            white-space: nowrap;
-        }
-
-        .vc-lang-btn:hover {
-            color: var(--cos-color-text);
-            border-color: var(--cos-color-primary);
-        }
-
-        /* 第二行：公式筛选下拉与分组 */
-        .vc-operate-row-select {
             display: flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .vc-select-container {
-            flex: 1;
-            position: relative;
-        }
-
-        .vc-custom-select {
-            width: 100%;
-            background: var(--cos-card-color-bg);
-            color: var(--cos-color-text);
-            border: 1px solid var(--cos-color-border);
-            border-radius: 5px;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 500;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c93a0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 6px center;
-        }
-
-        .vc-custom-select:focus {
-            border-color: var(--cos-color-primary);
-        }
-
-        .vc-case-group-tag {
-            font-size: 10px;
-            padding: 3px 6px;
-            background: var(--cos-card-color-bg);
-            color: var(--cos-color-text-sub);
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        /* 第三行：公式符号列表展示 */
-        .vc-formula-ribbon {
-            background: #141720;
-            border: 1px solid var(--cos-color-border-minor);
-            border-radius: 5px;
-            padding: 3px 6px;
-            min-height: 24px;
-            display: flex;
-            align-items: center;
-            gap: 3px;
+            gap: 4px;
             overflow-x: auto;
             scrollbar-width: none;
+            padding: 2px 0;
         }
-        .vc-formula-ribbon::-webkit-scrollbar {
+
+        .formula-tokens::-webkit-scrollbar {
             display: none;
         }
 
-        .vc-alg-token {
+        .move-token {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 24px;
+            padding: 0 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 700;
             font-family: ui-monospace, monospace;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--cos-color-text-minor);
-            padding: 1px 4px;
-            border-radius: 3px;
-            white-space: nowrap;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
         }
 
-        .vc-alg-token.current {
-            background: #ffe600;
-            color: #11141a;
-            box-shadow: 0 0 6px rgba(255, 230, 0, 0.4);
-            transform: scale(1.05);
+        .move-token.move-pending {
+            color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .vc-alg-token.passed {
-            color: var(--cos-color-text-sub);
-            text-decoration: line-through;
+        .move-token.move-done {
+            color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
         }
 
-        /* 第四行：步进控制按钮 */
-        .vc-operate-row-controls {
+        .move-token.move-current {
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            box-shadow: 0 2px 8px rgba(254, 44, 85, 0.45);
+            transform: scale(1.08);
+            border: none;
+        }
+
+        /* 进度条 */
+        .progress-bar-container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 5px;
+            gap: 8px;
         }
 
-        .vc-ctrl-btn {
+        .progress-bar {
             flex: 1;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #FE2C55;
+            border-radius: 2px;
+            transition: width 0.2s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 600;
+            min-width: 42px;
+            text-align: right;
+            font-family: ui-monospace, monospace;
+        }
+
+        /* 圆盘步进播放按钮组 (完全对齐 PlaybackControl.vue) */
+        .playback-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            padding-top: 2px;
+        }
+
+        .pb-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 3px;
-            height: 28px;
-            background: var(--cos-card-color-bg);
-            border: 1px solid var(--cos-color-border);
-            color: var(--cos-color-text);
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .vc-ctrl-btn:active {
-            transform: scale(0.98);
-        }
-
-        .vc-ctrl-btn.primary {
-            background: var(--cos-color-primary);
-            border-color: var(--cos-color-primary);
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .vc-ctrl-btn.primary:hover {
-            background: var(--cos-color-primary-hover);
-        }
-
-        .vc-ctrl-svg {
-            width: 12px;
-            height: 12px;
-            fill: currentColor;
-        }
-
-        /* 底部合规品牌心智提示 */
-        .vc-brand-footer {
-            font-size: 9px;
-            color: var(--cos-color-text-sub);
-            text-align: center;
+            transition: all 0.15s ease;
+            padding: 0;
             line-height: 1;
-            margin-top: 1px;
+        }
+
+        .pb-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .pb-btn:active {
+            transform: scale(0.9);
+        }
+
+        .pb-btn-play {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            border: none;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 4px 14px rgba(254, 44, 85, 0.4);
+        }
+
+        .pb-btn-play:hover {
+            box-shadow: 0 6px 18px rgba(254, 44, 85, 0.55);
+        }
+
+        .pb-btn-play:active {
+            transform: scale(0.92);
+        }
+
+        .pb-btn-play.playing {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            box-shadow: 0 4px 14px rgba(96, 165, 250, 0.4);
+        }
+
+        /* ── 列表选题弹窗 (Modal Picker Sheet) ── */
+        .case-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .case-modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .case-modal-sheet {
+            background: #181b24;
+            border-top: 1px solid #2d3345;
+            border-radius: 14px 14px 0 0;
+            max-height: 75%;
+            display: flex;
+            flex-direction: column;
+            padding: 12px 14px 16px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #F0F0F5;
+        }
+
+        .modal-close-btn {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #a0a0b8;
+            font-size: 16px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            overflow-y: auto;
+            max-height: 230px;
+            padding: 4px 2px;
+        }
+
+        .modal-case-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .modal-case-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-case-item.selected {
+            background: rgba(254, 44, 85, 0.15);
+            border-color: #FE2C55;
+            color: #FE2C55;
+        }
+
+        .modal-item-id {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .modal-item-name {
+            font-size: 10px;
+            color: #8c93a0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal-case-item.selected .modal-item-name {
+            color: #fca5a5;
         }
     </style>
-    <!-- 引入本地已编译优化且合规的 cubing.js twisty 引擎 -->
+    <!-- 引入内联的 3D twisty 引擎 -->
     <script type="module">
 var zE=Object.defineProperty;var L=(t,e)=>()=>(t&&(e=t(t=0)),e);var on=(t,e)=>{for(var i in e)zE(t,i,{get:e[i],enumerable:!0})};var BE,y0,GE,w,xh,x,Q,se,Ie,ra,di=L(()=>{"use strict";BE=Object.defineProperty,y0=t=>{throw TypeError(t)},GE=(t,e,i)=>e in t?BE(t,e,{enumerable:!0,configurable:!0,writable:!0,value:i}):t[e]=i,w=(t,e,i)=>GE(t,typeof e!="symbol"?e+"":e,i),xh=(t,e,i)=>e.has(t)||y0("Cannot "+i),x=(t,e,i)=>(xh(t,e,"read from private field"),i?i.call(t):e.get(t)),Q=(t,e,i)=>e.has(t)?y0("Cannot add the same private member more than once"):e instanceof WeakSet?e.add(t):e.set(t,i),se=(t,e,i,r)=>(xh(t,e,"write to private field"),r?r.call(t,i):e.set(t,i),i),Ie=(t,e,i)=>(xh(t,e,"access private method"),i),ra=(t,e,i,r)=>({set _(n){se(t,e,n,i)},get _(){return x(t,e,r)}})});function WE(t,e=!0){if(!e)return t;switch(t){case 1:return-1;case-1:return 1}}function Nh(t,e){return e===-1?Array.from(t).reverse():t}function HE(t){return Array.from(t).reverse()}function*_0(t,e){e===-1?yield*XE(t):yield*t}function*XE(t){for(let e of Array.from(t).reverse())yield e}function Pl(t,e){return t?parseInt(t,10):e}function b0(t){return new kh().parseAlg(t)}function i4(t){return new kh().parseMove(t)}function r4(t){return new kh().parseQuantumMove(t)}function Vt(t,e,i){let r=t;return r[wi]=e,r[$i]=i,r}function n4(t,e){return wi in t&&(e[wi]=t[wi]),$i in t&&(e[$i]=t[$i]),e}function C0(t){v0.has(t)||(console.warn(t),v0.add(t))}function Fr(t,e){return t instanceof e}function l4(t){return Fr(t,Wt)||Fr(t,Gn)||Fr(t,_i)||Fr(t,$t)||Fr(t,A)||Fr(t,Ur)||Fr(t,Ht)}function f4(t,e){return t*Math.sign(e.amount)>=0}function Ih(t,e,i=0){return((t-i)%e+e)%e+i}function Ph(t,e,i){let r=new D0(i),n=Array.from(t.childAlgNodes()),s=[e];function o(){return new me([...n,...s])}function a(l){if(r.cancelPuzzleSpecificModWrap()==="none")return l;let c=r.puzzleSpecificSimplifyOptions()?.quantumMoveOrder;if(!c)return l;let f=c(e.quantum),h;switch(r.cancelPuzzleSpecificModWrap()){case"gravity":{h=-Math.floor((f-(l.amount<0?0:1))/2);break}case"canonical-centered":{h=-Math.floor((f-1)/2);break}case"canonical-positive":{h=0;break}case"preserve-sign":{h=l.amount<0?1-f:0;break}default:throw new Error("Unknown mod wrap")}let u=Ih(l.amount,f,h);return l.modified({amount:u})}if(r.cancelAny()){let l,c=r.puzzleSpecificSimplifyOptions()?.axis;if(c)l=d=>c.areQuantumMovesSameAxis(e.quantum,d.quantum);else{let d=e.quantum.toString();l=y=>y.quantum.toString()===d}let f=r.cancelQuantum()==="same-direction",h=new Map;h.set(e.quantum.toString(),Math.sign(e.amount));let u;for(u=n.length-1;u>=0;u--){let d=n[u].as(A);if(!d||!l(d))break;let y=d.quantum.toString();if(f){let g=h.get(y);if(g&&!f4(g,d))break;h.set(y,Math.sign(d.amount))}}let p=[...n.splice(u+1),e];if(c)s=c.simplifySameAxisMoves(p,r.cancelPuzzleSpecificModWrap()!=="none");else{let d=p.reduce((y,g)=>y+g.amount,0);if(h.size!==1)throw new Error("Internal error: multiple quantums when one was expected");s=[new A(e.quantum,d)]}}return s=s.map(l=>a(l)).filter(l=>l.amount!==0),o()}function h4(t,e,i){let r=e.as(A);return r?Ph(t,r,i):new me([...t.childAlgNodes(),e])}function L0(t,e,i){if(e.is(Wt))return t.traverseGrouping(e,i);if(e.is(A))return t.traverseMove(e,i);if(e.is(_i))return t.traverseCommutator(e,i);if(e.is($t))return t.traverseConjugate(e,i);if(e.is(Ht))return t.traversePause(e,i);if(e.is(Ur))return t.traverseNewline(e,i);if(e.is(Gn))return t.traverseLineComment(e,i);throw new Error("unknown AlgNode")}function N0(t){if(t.is(Wt)||t.is(A)||t.is(_i)||t.is($t)||t.is(Ht)||t.is(Ur)||t.is(Gn))return t;throw new Error("internal error: expected AlgNode")}function Xt(t,e){let i=new t(...e??[]);return i.traverseAlg.bind(i)}function x0(t){if(!t)return[];if(Fr(t,me))return t.childAlgNodes();if(typeof t=="string")return b0(t).childAlgNodes();let e=t;if(typeof e[Symbol.iterator]=="function")return e;throw new Error("Invalid AlgNode")}function fa(t){return Fr(t,me)?t:new me(t)}function m4(t,e){return t.is(Ur)||e.is(Ur)||e.as(Wt)?.experimentalNISSPlaceholder?"":t.is(Gn)&&!e.is(Ur)?`
 `:" "}var VE,E0,ln,Ts,Ds,qE,_i,na,sa,jE,$t,Mh,Rh,YE,Ls,zl,Bn,KE,Gn,Ur,Ht,ZE,S0,QE,$E,JE,e4,t4,wi,$i,Ti,Fe,oa,kh,v0,bh,an,ni,si,s4,Ge,Qt,Ul,Fl,Ah,A0,A,o4,Eh,Li,Th,T0,a4,Wt,c4,D0,xr,Or,Ol,vr,Dh,ca,Lh,d4,u4,Di,p4,me,V8,zr=L(()=>{"use strict";di();VE=!1,E0=class{is(t){return this instanceof t}as(t){return this instanceof t?this:null}},ln=class extends E0{constructor(){super(),VE&&Object.defineProperty(this,"_debugStr",{get:()=>this.toString()})}get log(){return console.log.bind(console,this,this.toString())}};qE=class _h extends ln{constructor(e,i){super(),Q(this,Ts),Q(this,Ds),se(this,Ts,fa(e)),se(this,Ds,fa(i))}get A(){return x(this,Ts)}get B(){return x(this,Ds)}isIdentical(e){let i=e.as(_h);return!!(i?.A.isIdentical(this.A)&&i?.B.isIdentical(this.B))}invert(){return new _h(x(this,Ds),x(this,Ts))}*experimentalExpand(e=1,i){i??(i=1/0),i===0?yield e===1?this:this.invert():e===1?(yield*this.A.experimentalExpand(1,i-1),yield*this.B.experimentalExpand(1,i-1),yield*this.A.experimentalExpand(-1,i-1),yield*this.B.experimentalExpand(-1,i-1)):(yield*this.B.experimentalExpand(1,i-1),yield*this.A.experimentalExpand(1,i-1),yield*this.B.experimentalExpand(-1,i-1),yield*this.A.experimentalExpand(-1,i-1))}toString(e){return`[${x(this,Ts).toString(e)}, ${x(this,Ds).toString(e)}]`}};Ts=new WeakMap;Ds=new WeakMap;_i=qE,jE=class wh extends ln{constructor(e,i){super(),Q(this,na),Q(this,sa),se(this,na,fa(e)),se(this,sa,fa(i))}get A(){return x(this,na)}get B(){return x(this,sa)}isIdentical(e){let i=e.as(wh);return!!(i?.A.isIdentical(this.A)&&i?.B.isIdentical(this.B))}invert(){return new wh(x(this,na),x(this,sa).invert())}*experimentalExpand(e,i){i??(i=1/0),i===0?yield e===1?this:this.invert():(yield*this.A.experimentalExpand(1,i-1),yield*this.B.experimentalExpand(e,i-1),yield*this.A.experimentalExpand(-1,i-1))}toString(e){return`[${this.A.toString(e)}: ${this.B.toString(e)}]`}};na=new WeakMap;sa=new WeakMap;$t=jE,Mh=2147483647,Rh="2^31 - 1",YE=-2147483648,zl=class{constructor(){Q(this,Ls,[])}push(t){x(this,Ls).push(t)}experimentalPushAlg(t){for(let e of t.childAlgNodes())this.push(e)}experimentalNumAlgNodes(){return x(this,Ls).length}toAlg(){return new me(x(this,Ls))}reset(){se(this,Ls,[])}};Ls=new WeakMap;KE=class w0 extends ln{constructor(e){if(super(),Q(this,Bn),e.includes(`
@@ -10312,114 +10472,123 @@ twisty-alg-viewer {
 \u2022 rotations (e.g. x) count as 0 turns`,ETM:`ETM ("Execution Turn Metric"):
 \u2022 all moves (including rotations) count as 1 turn`},F8={OBTM:"OB",OBQTM:"OBQ",RBTM:"RB",RBQTM:"RBQ",ETM:"E"},Ms,s0,l0,bs,ea,fh,hh,U8=class extends Oi{constructor(t){super({mode:"open"}),this.options=t,Q(this,Ms),w(this,"twistyPlayer",null),w(this,"a",null),Q(this,l0),Q(this,bs),Q(this,ea),Q(this,fh)}async connectedCallback(){if(se(this,ea,this.addElement(document.createElement("div"))),x(this,ea).classList.add("responsive-wrapper"),this.options?.colorScheme==="dark"&&this.contentWrapper.classList.add("dark-mode"),this.addCSS(yh),this.options?.cdnForumTweaks&&this.addCSS(PE),this.a=this.querySelector("a"),!this.a)return;let t=P8("",this.a.href),e=this.a?.href,{hostname:i,pathname:r}=new URL(e);if(i!=="alpha.twizzle.net"){Ie(this,Ms,s0).call(this);return}if(["/edit/","/explore/"].includes(r)){let n=r==="/explore/";if(t.puzzle&&!(t.puzzle in sd)){let a=(await Promise.resolve().then(()=>(Us(),Fs))).getPuzzleDescriptionString(t.puzzle);delete t.puzzle,t.experimentalPuzzleDescription=a}if(this.twistyPlayer=x(this,ea).appendChild(new Sh({background:this.options?.cdnForumTweaks?"checkered-transparent":"checkered",colorScheme:this.options?.colorScheme==="dark"?"dark":"light",...t,viewerLink:n?"experimental-twizzle-explorer":"auto"})),this.twistyPlayer.fullscreenElement=this.contentWrapper,t.experimentalTitle&&(this.twistyPlayer.experimentalTitle=t.experimentalTitle),se(this,bs,x(this,ea).appendChild(document.createElement("div"))),x(this,bs).classList.add("scrollable-region"),t.experimentalTitle&&Ie(this,Ms,hh).call(this,t.experimentalTitle).classList.add("title"),t.experimentalSetupAlg){Ie(this,Ms,hh).call(this,"Setup",async()=>(await this.twistyPlayer?.experimentalModel.setupAlg.get())?.alg.toString()??null);let a=x(this,bs).appendChild(document.createElement("div"));a.classList.add("setup-alg"),a.textContent=new me(t.experimentalSetupAlg).toString()}let s=Ie(this,Ms,hh).call(this,"Moves",async()=>(await this.twistyPlayer?.experimentalModel.alg.get())?.alg.toString()??null);se(this,fh,s.appendChild(O8(this.twistyPlayer.experimentalModel))),x(this,fh).classList.add("move-count"),x(this,bs).appendChild(new IE({twistyPlayer:this.twistyPlayer})).part.add("twisty-alg-viewer")}else Ie(this,Ms,s0).call(this)}};Ms=new WeakSet;s0=function(){if(this.contentWrapper.textContent="",this.a){let e=this.contentWrapper.appendChild(document.createElement("span"));e.textContent="\u2757\uFE0F",e.title="Could not show a player for link",this.addElement(this.a)}this.removeCSS(yh);let t=this.shadow.adoptedStyleSheets.indexOf(yh);typeof t<"u"&&this.shadow.adoptedStyleSheets.splice(t,t+1),x(this,l0)?.remove()};l0=new WeakMap;bs=new WeakMap;ea=new WeakMap;fh=new WeakMap;hh=function(t,e){let i=x(this,bs).appendChild(document.createElement("div"));i.classList.add("heading");let r=i.appendChild(document.createElement("span"));if(r.textContent=t,e){r.textContent+=" ";let n=r.appendChild(document.createElement("a"));n.textContent="\u{1F4CB}",n.href="#",n.title="Copy to clipboard";async function s(o){n.textContent=o,await new Promise(a=>setTimeout(a,2e3)),n.textContent===o&&(n.textContent="\u{1F4CB}")}n.addEventListener("click",async o=>{o.preventDefault(),n.textContent="\u{1F4CB}\u2026";let a=await e();if(a)try{await navigator.clipboard.writeText(a),s("\u{1F4CB}\u2705")}catch(l){throw s("\u{1F4CB}\u274C"),l}else s("\u{1F4CB}\u274C")})}return i};ii.define("twizzle-link",U8);function O8(t,e=document.createElement("span")){async function i(){let[r,n]=await Promise.all([t.puzzleAlg.get(),t.puzzleLoader.get()]);if(r.issues.errors.length!==0){e.textContent="";return}let s=!0;function o(a){s?s=!1:e.append(")(");let l=e.appendChild(document.createElement("span")),c=Ux(n,a,r.alg);l.append(`${F8[a]}: `);let f=l.appendChild(document.createElement("span"));f.textContent=c.toString(),f.classList.add("move-number"),l.setAttribute("data-before",sE[a]??""),l.setAttribute("title",sE[a]??"")}e.textContent="(",n.id==="3x3x3"?(o("OBTM"),o("OBQTM"),o("RBTM")):n.pg&&(o("RBTM"),o("RBQTM")),o("ETM"),e.append(")")}return t.puzzleAlg.addFreshListener(i),t.puzzleID.addFreshListener(i),e}export{qo as EXPERIMENTAL_PROP_NO_VALUE,zR as ExperimentalSVGAnimator,TR as SimpleAlgIndexer,Ox as TreeAlgIndexer,XR as Twisty2DPuzzleWrapper,C8 as TwistyAlgEditor,IE as TwistyAlgViewer,Sh as TwistyPlayer,U8 as TwizzleLink,bU as backViewLayouts,iR as setTwistyDebug};
 
-</script>
+    </script>
 </head>
 <body>
 <div class="vc-component-wrapper">
     <div class="vc-component-container" id="vc-container">
         <!-- 1. 表头 -->
-        <div class="vc-component-header">
+        <div class="vc-header">
             <div class="vc-header-left">
                 <span class="vc-header-title">
-                    小工具 · 魔方公式
-                    <span class="vc-badge">3D交互</span>
+                    魔方公式速查
+                    <span class="vc-header-badge">3D交互</span>
                 </span>
             </div>
-            <div class="vc-header-actions">
-                <button class="vc-icon-btn" id="btn-info" title="功能说明" aria-label="功能说明">
-                    <svg class="vc-icon-svg" viewBox="0 0 24 24">
+            <div class="vc-header-right">
+                <button class="vc-header-btn" id="btn-info" title="说明" aria-label="说明">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
                     </svg>
                 </button>
-                <button class="vc-icon-btn" id="btn-reset" title="复位视角与公式" aria-label="复位">
-                    <svg class="vc-icon-svg" viewBox="0 0 24 24">
-                        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                    </svg>
-                </button>
-            </div>
-            <!-- 气泡提示 -->
-            <div class="vc-tips-tooltip" id="tips-tooltip">
-                <strong>土豆魔方 · 3D公式速查</strong><br>
-                1. 基于官方 cubing.js 真实物理级 3D 渲染，支持 360° 拖拽旋转。<br>
-                2. 支持 F2L / OLL / PLL 全套精选核心公式，分步高亮与连续播放。<br>
-                3. 支持一键切换中英文俗称与国际标准代号。<br>
-                <em>更多对战排位与计时同步，可搜索微信小程序「土豆魔方」。</em>
             </div>
         </div>
 
-        <!-- 2. 卡片主体 -->
-        <div class="vc-component-card-wrapper">
-            <!-- 3D 渲染展示区 -->
-            <div class="vc-component-demo" id="demo-area">
+        <!-- 2. 魔方展示区 (参考 practice.vue) -->
+        <div class="player-section">
+            <div class="player-container">
+                <!-- 左上角悬浮工具圆钮 -->
+                <div class="top-left-tools">
+                    <button class="floating-tool-btn" id="tool-view" title="复位视角">视角</button>
+                    <button class="floating-tool-btn" id="tool-mask" title="切换遮罩">遮罩</button>
+                    <button class="floating-tool-btn" id="tool-lang" title="中英切换">中/EN</button>
+                </div>
+
+                <!-- 右上角悬浮工具圆钮 -->
+                <div class="top-right-tools">
+                    <button class="floating-tool-btn highlight" id="tool-next" title="下一个公式">切换</button>
+                    <button class="floating-tool-btn" id="tool-list" title="公式列表">列表</button>
+                    <button class="floating-tool-btn" id="tool-reset" title="重置状态">重置</button>
+                </div>
+
+                <!-- 3D Twisty Player -->
                 <twisty-player
                     id="cube-player"
+                    class="cube-player"
                     puzzle="3x3x3"
                     background="none"
                     control-panel="none"
                     experimental-setup-anchor="end"
                     camera-latitude="25"
                     camera-longitude="20"
-                    tempo-scale="2.0"
+                    camera-distance="4.5"
+                    tempo-scale="2.5"
                 ></twisty-player>
-                <!-- 2D 顶面投影指示器 -->
-                <div class="vc-topface-hud" id="topface-hud" title="顶面状态">
-                    <svg id="topface-svg" viewBox="0 0 60 60"></svg>
-                </div>
-                <!-- 视角提示 -->
-                <div class="vc-canvas-hint">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></svg>
-                    拖拽旋转 3D 魔方
-                </div>
-                <!-- 当前步骤指示 -->
-                <div class="vc-step-hud">
-                    <div class="vc-current-move-badge" id="hud-move">-</div>
-                    <div class="vc-current-move-cn" id="hud-cn">就绪</div>
-                </div>
             </div>
 
-            <!-- 操作控制区 -->
-            <div class="vc-component-operate">
-                <!-- 第一行：Tabs 与中英文开关 -->
-                <div class="vc-operate-row-tabs">
-                    <div class="vc-tab-group" id="type-tabs">
-                        <button class="vc-tab-btn" data-type="F2L">F2L (41)</button>
-                        <button class="vc-tab-btn active" data-type="OLL">OLL (57)</button>
-                        <button class="vc-tab-btn" data-type="PLL">PLL (21)</button>
+            <!-- 公式卡片展示区 (直接对齐 practice.vue) -->
+            <div class="formula-panel">
+                <div class="formula-area solution-active" id="formula-card" title="点击在解法与逆推打乱之间切换">
+                    <div class="formula-card-top">
+                        <div class="case-name-info">
+                            <span id="card-case-id">OLL-27</span>
+                            <span id="card-case-name">小鱼1</span>
+                            <span class="case-group-badge" id="card-case-group">十字组</span>
+                        </div>
+                        <div class="formula-toggle-hint">
+                            <span>⇄</span>
+                            <span id="hint-toggle-mode">切打乱</span>
+                        </div>
                     </div>
-                    <button class="vc-lang-btn" id="btn-lang" title="切换中英文">中 / EN</button>
-                </div>
-
-                <!-- 第二行：公式筛选下拉与分组 -->
-                <div class="vc-operate-row-select">
-                    <span class="vc-case-group-tag" id="group-tag">十字组</span>
-                    <div class="vc-select-container">
-                        <select class="vc-custom-select" id="case-select"></select>
+                    <div class="formula-text" id="formula-text"></div>
+                    <div class="formula-card-bottom">
+                        <span class="mode-badge solution" id="mode-badge">解法</span>
+                        <span class="step-current-cn" id="step-hint-cn">点击播放或步进练习</span>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- 第三行：公式动作符号条 -->
-                <div class="vc-formula-ribbon" id="formula-ribbon"></div>
+        <!-- 3. 下方控制区 (直接对齐 ControlSwitch & PlaybackControl) -->
+        <div class="controls-section">
+            <!-- 分段分类切换 -->
+            <div class="control-switch" id="type-switch">
+                <button class="switch-btn" data-type="F2L">F2L (41)</button>
+                <button class="switch-btn active" data-type="OLL">OLL (57)</button>
+                <button class="switch-btn" data-type="PLL">PLL (21)</button>
+            </div>
 
-                <!-- 第四行：步进播放控制 -->
-                <div class="vc-operate-row-controls">
-                    <button class="vc-ctrl-btn" id="btn-prev" title="上一步">
-                        <svg class="vc-ctrl-svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-                        上一步
-                    </button>
-                    <button class="vc-ctrl-btn primary" id="btn-play">
-                        <svg class="vc-ctrl-svg" id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        <span id="play-text">播放</span>
-                    </button>
-                    <button class="vc-ctrl-btn" id="btn-next" title="下一步">
-                        下一步
-                        <svg class="vc-ctrl-svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-                    </button>
+            <!-- 步骤 Tokens 缎带 -->
+            <div class="formula-tokens-wrap">
+                <div class="formula-tokens" id="formula-tokens"></div>
+            </div>
+
+            <!-- 进度条 -->
+            <div class="progress-bar-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
                 </div>
+                <span class="progress-text" id="progress-text">0 / 0</span>
+            </div>
 
-                <!-- 品牌心智提示 -->
-                <div class="vc-brand-footer">
-                    土豆魔方 · 专业 3D 动画演示
+            <!-- 圆盘步进播放器 (对齐 PlaybackControl.vue) -->
+            <div class="playback-controls">
+                <button class="pb-btn" id="pb-start" title="回到起点">⏮</button>
+                <button class="pb-btn" id="pb-prev" title="上一步">◀</button>
+                <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停">▶</button>
+                <button class="pb-btn" id="pb-next" title="下一步">▶</button>
+                <button class="pb-btn" id="pb-end" title="跳到结尾">⏭</button>
+            </div>
+        </div>
+
+        <!-- 4. 公式列表选择弹窗 (Sheet) -->
+        <div class="case-modal-overlay" id="case-modal">
+            <div class="case-modal-sheet">
+                <div class="modal-header">
+                    <span class="modal-title" id="modal-title">选择公式</span>
+                    <button class="modal-close-btn" id="btn-modal-close">✕</button>
                 </div>
+                <div class="modal-grid" id="modal-grid"></div>
             </div>
         </div>
     </div>
@@ -10429,38 +10598,42 @@ twisty-alg-viewer {
 (function () {
     'use strict';
 
-    /* ── 1. 核心精选 CFOP 公式数据库 (纯前端自包含字典) ───────────────────────── */
+    /* ── 公式数据库 ── */
     var FORMULA_DATABASE = {
         F2L: [
-            { id: 'F2L-01', en: 'Basic Insert', cn: '基本型 (右上入槽)', group: '基本型', alg: "U R U' R'" },
-            { id: 'F2L-02', en: 'Left Insert', cn: '基本型 (左上入槽)', group: '基本型', alg: "U' L' U L" },
-            { id: 'F2L-03', en: 'Diff Color Top', cn: '顶异色分离', group: '角块顶棱块顶', alg: "R U' R' U2 R U R'" },
-            { id: 'F2L-04', en: 'Same Color Top', cn: '顶同色入槽', group: '角块顶棱块顶', alg: "R' U2 R2 U R2' U R" },
+            { id: 'F2L-01', en: 'Basic Insert (R)', cn: '基本型 (右上入槽)', group: '基本型', alg: "U R U' R'" },
+            { id: 'F2L-02', en: 'Basic Insert (L)', cn: '基本型 (左上入槽)', group: '基本型', alg: "U' L' U L" },
+            { id: 'F2L-03', en: 'Diff Color Top', cn: '顶异色分离', group: '角顶棱顶', alg: "R U' R' U2 R U R'" },
+            { id: 'F2L-04', en: 'Same Color Top', cn: '顶同色入槽', group: '角顶棱顶', alg: "R' U2 R2 U R2' U R" },
             { id: 'F2L-05', en: 'Corner in Bottom', cn: '角在底异色', group: '角底棱顶', alg: "U R U' R' U' R U R'" },
-            { id: 'F2L-06', en: 'Corner White Up', cn: '角白朝上', group: '特殊朝向', alg: "R U2 R' U' R U R'" }
+            { id: 'F2L-06', en: 'Corner White Up', cn: '角白朝上入槽', group: '特殊朝向', alg: "R U2 R' U' R U R'" },
+            { id: 'F2L-07', en: 'Edge in Slot', cn: '棱块在槽异向', group: '棱槽角顶', alg: "R U' R' U R U2 R' U R U' R'" },
+            { id: 'F2L-08', en: 'Both in Slot', cn: '角棱同槽异向', group: '角棱同槽', alg: "R U' R' U' R U R' U2 R U' R'" }
         ],
         OLL: [
-            { id: 'OLL-27', en: 'Sune (Fish 1)', cn: '小鱼1', group: '十字组', alg: "R U R' U R U2 R'", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,1,0,0,0,1,0,0,0,1,0] },
-            { id: 'OLL-26', en: 'Anti-Sune (Fish 2)', cn: '小鱼2', group: '十字组', alg: "R U2 R' U' R U' R'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,0,1,0,0,0,1,0,0,0] },
-            { id: 'OLL-21', en: 'H-Shape (Cross)', cn: '十字形 (H)', group: '十字组', alg: "R U2 R' U' R U R' U' R U' R'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,1,0,0,0,1,0,1,0,0,0] },
-            { id: 'OLL-22', en: 'Pi (Headlights)', cn: '十字形 (Pi)', group: '十字组', alg: "R U2 R2 U' R2 U' R2 U2 R", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,1,0,1,1,0,0,0,0,0] },
-            { id: 'OLL-23', en: 'Headlights', cn: '车灯 (十字)', group: '十字组', alg: "R2 D R' U2 R D' R' U2 R'", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,0,1,0,1,0,0,0,1,0,1] },
-            { id: 'OLL-24', en: 'Chameleon', cn: '变色龙', group: '十字组', alg: "r U R' U' r' F R F'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,0,0,0,0,0,1,1,0,1] },
-            { id: 'OLL-25', en: 'Bowtie', cn: '领结形', group: '十字组', alg: "F' r U R' U' r' F R", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,1,1,0,0,1,0,0,0,0,1] },
-            { id: 'OLL-33', en: 'T-Shape', cn: 'T字形', group: 'T字组', alg: "R U R' U' R' F R F'", topState: [0,0,0, 1,1,1, 0,1,0, 0,1,0,0,0,0,0,1,0,0,0,0] },
-            { id: 'OLL-45', en: 'Line (Bar)', cn: '一字形', group: '一字组', alg: "F R U R' U' F'", topState: [0,0,0, 1,1,1, 0,0,0, 0,1,0,0,0,0,0,1,0,0,0,0] },
-            { id: 'OLL-44', en: 'Gun (Angle)', cn: '拐角形', group: '拐角组', alg: "f R U R' U' f'", topState: [0,1,0, 1,1,0, 0,0,0, 0,0,0,0,1,0,0,0,0,0,1,0] }
+            { id: 'OLL-27', en: 'Sune', cn: '小鱼1 (顶右黄)', group: '十字组', alg: "R U R' U R U2 R'", mask: "OLL" },
+            { id: 'OLL-26', en: 'Anti-Sune', cn: '小鱼2 (顶左黄)', group: '十字组', alg: "R U2 R' U' R U' R'", mask: "OLL" },
+            { id: 'OLL-21', en: 'Cross H', cn: '十字形 (H)', group: '十字组', alg: "R U2 R' U' R U R' U' R U' R'", mask: "OLL" },
+            { id: 'OLL-22', en: 'Cross Pi', cn: '十字形 (Pi)', group: '十字组', alg: "R U2 R2 U' R2 U' R2 U2 R", mask: "OLL" },
+            { id: 'OLL-23', en: 'Headlights', cn: '车灯 (双角同侧)', group: '十字组', alg: "R2 D R' U2 R D' R' U2 R'", mask: "OLL" },
+            { id: 'OLL-24', en: 'Chameleon', cn: '变色龙 (斜对角)', group: '十字组', alg: "r U R' U' r' F R F'", mask: "OLL" },
+            { id: 'OLL-25', en: 'Bowtie', cn: '领结形 (对称角)', group: '十字组', alg: "F' r U R' U' r' F R", mask: "OLL" },
+            { id: 'OLL-33', en: 'T-Shape', cn: 'T字形', group: 'T字组', alg: "R U R' U' R' F R F'", mask: "OLL" },
+            { id: 'OLL-45', en: 'Line (Bar)', cn: '一字形', group: '一字组', alg: "F R U R' U' F'", mask: "OLL" },
+            { id: 'OLL-44', en: 'Gun (Angle)', cn: '拐角形', group: '拐角组', alg: "f R U R' U' f'", mask: "OLL" },
+            { id: 'OLL-57', en: 'Dot H', cn: '纯点形 (对边)', group: '点形组', alg: "R U R' U' M' U R U' r'", mask: "OLL" },
+            { id: 'OLL-01', en: 'Dot Pure', cn: '零棱全点', group: '点形组', alg: "R U2 R2 F R F' U2 R' F R F'", mask: "OLL" }
         ],
         PLL: [
-            { id: 'T-Perm', en: 'T-Perm', cn: 'T字换 (角棱对换)', group: '角棱互换', alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
-            { id: 'Ua-Perm', en: 'Ua-Perm', cn: 'Ua换 (三棱顺时针)', group: '棱块交换', alg: "R U' R U R U R U' R' U' R2" },
-            { id: 'Ub-Perm', en: 'Ub-Perm', cn: 'Ub换 (三棱逆时针)', group: '棱块交换', alg: "R2 U R U R' U' R' U' R' U R'" },
-            { id: 'H-Perm', en: 'H-Perm', cn: 'H换 (对棱互换)', group: '棱块交换', alg: "M2 U M2 U2 M2 U M2" },
-            { id: 'Z-Perm', en: 'Z-Perm', cn: 'Z换 (邻棱互换)', group: '棱块交换', alg: "M2 U M2 U M' U2 M2 U2 M'" },
-            { id: 'Aa-Perm', en: 'Aa-Perm', cn: 'Aa换 (三角顺时针)', group: '角块交换', alg: "x R' U R' D2 R U' R' D2 R2 x'" },
-            { id: 'Ab-Perm', en: 'Ab-Perm', cn: 'Ab换 (三角逆时针)', group: '角块交换', alg: "x R2 D2 R U R' D2 R U' R x'" },
-            { id: 'Y-Perm', en: 'Y-Perm', cn: 'Y字换 (对角对换)', group: '角棱互换', alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
-            { id: 'Jb-Perm', en: 'Jb-Perm', cn: 'Jb换 (同侧角棱换)', group: '角棱互换', alg: "R U R' F' R U R' U' R' F R2 U' R'" }
+            { id: 'T-Perm', en: 'T-Perm', cn: 'T字换 (右角棱对换)', group: '角棱对换', alg: "R U R' U' R' F R2 U' R' U' R U R' F'", mask: "PLL" },
+            { id: 'Ua-Perm', en: 'Ua-Perm', cn: 'Ua换 (三棱顺时针)', group: '棱块交换', alg: "R U' R U R U R U' R' U' R2", mask: "PLL" },
+            { id: 'Ub-Perm', en: 'Ub-Perm', cn: 'Ub换 (三棱逆时针)', group: '棱块交换', alg: "R2 U R U R' U' R' U' R' U R'", mask: "PLL" },
+            { id: 'H-Perm', en: 'H-Perm', cn: 'H换 (对棱互换)', group: '棱块交换', alg: "M2 U M2 U2 M2 U M2", mask: "PLL" },
+            { id: 'Z-Perm', en: 'Z-Perm', cn: 'Z换 (邻棱互换)', group: '棱块交换', alg: "M2 U M2 U M' U2 M2 U2 M'", mask: "PLL" },
+            { id: 'Aa-Perm', en: 'Aa-Perm', cn: 'Aa换 (三角顺转)', group: '角块交换', alg: "x R' U R' D2 R U' R' D2 R2 x'", mask: "PLL" },
+            { id: 'Ab-Perm', en: 'Ab-Perm', cn: 'Ab换 (三角逆转)', group: '角块交换', alg: "x R2 D2 R U R' D2 R U' R x'", mask: "PLL" },
+            { id: 'Y-Perm', en: 'Y-Perm', cn: 'Y字换 (对角对棱换)', group: '角棱互换', alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'", mask: "PLL" },
+            { id: 'Jb-Perm', en: 'Jb-Perm', cn: 'Jb换 (同侧角棱换)', group: '角棱互换', alg: "R U R' F' R U R' U' R' F R2 U' R'", mask: "PLL" }
         ]
     };
 
@@ -10472,116 +10645,181 @@ twisty-alg-viewer {
         "F": "前顺", "F'": "前逆", "F2": "前双",
         "B": "后顺", "B'": "后逆", "B2": "后双",
         "M": "中顺", "M'": "中逆", "M2": "中双",
-        "r": "右双层顺", "r'": "右双层逆", "f": "前双层顺", "f'": "前双层逆",
-        "x": "整架下翻", "x'": "整架上翻", "y": "整架左转", "y'": "整架右转"
+        "r": "右双层", "r'": "右双逆", "f": "前双层", "f'": "前双逆",
+        "x": "下翻", "x'": "上翻", "y": "左转", "y'": "右转"
     };
 
-    /* ── 2. 状态管理 ───────────────────────────────────────────── */
+    /* ── 状态管理 ── */
     var state = {
         currentType: 'OLL',
         currentCaseIndex: 0,
-        isEnglish: false,
-        activeTokens: [],
+        displayMode: 'solution', // 'solution' | 'scramble'
+        showChinese: false,
+        maskEnabled: true,
+        tokens: [],
         currentStep: 0,
         isPlaying: false
     };
 
-    function sendGenuiLog(area) {
+    function sendLog(area) {
         if (window.genui && typeof window.genui.sendLog === 'function') {
             window.genui.sendLog({ area: area || 'operation' });
         }
     }
 
-    /* ── 3. DOM 引用 ───────────────────────────────────────────── */
+    /* ── DOM 元素 ── */
     var player = document.getElementById('cube-player');
-    var selectEl = document.getElementById('case-select');
-    var ribbonEl = document.getElementById('formula-ribbon');
-    var groupTagEl = document.getElementById('group-tag');
-    var hudMoveEl = document.getElementById('hud-move');
-    var hudCnEl = document.getElementById('hud-cn');
-    var playBtn = document.getElementById('btn-play');
-    var playText = document.getElementById('play-text');
-    var playIcon = document.getElementById('play-icon');
+    var formulaCard = document.getElementById('formula-card');
+    var cardCaseId = document.getElementById('card-case-id');
+    var cardCaseName = document.getElementById('card-case-name');
+    var cardCaseGroup = document.getElementById('card-case-group');
+    var formulaText = document.getElementById('formula-text');
+    var modeBadge = document.getElementById('mode-badge');
+    var hintToggleMode = document.getElementById('hint-toggle-mode');
+    var stepHintCn = document.getElementById('step-hint-cn');
+    var formulaTokensEl = document.getElementById('formula-tokens');
+    var progressFill = document.getElementById('progress-fill');
+    var progressText = document.getElementById('progress-text');
 
-    function parseAlgTokens(algStr) {
+    var btnPlay = document.getElementById('pb-play');
+    var btnPrev = document.getElementById('pb-prev');
+    var btnNext = document.getElementById('pb-next');
+    var btnStart = document.getElementById('pb-start');
+    var btnEnd = document.getElementById('pb-end');
+
+    var toolView = document.getElementById('tool-view');
+    var toolMask = document.getElementById('tool-mask');
+    var toolLang = document.getElementById('tool-lang');
+    var toolNext = document.getElementById('tool-next');
+    var toolList = document.getElementById('tool-list');
+    var toolReset = document.getElementById('tool-reset');
+
+    var caseModal = document.getElementById('case-modal');
+    var modalGrid = document.getElementById('modal-grid');
+    var modalTitle = document.getElementById('modal-title');
+    var btnModalClose = document.getElementById('btn-modal-close');
+
+    function parseTokens(algStr) {
         return algStr.replace(/[()]/g, '').trim().split(/\s+/).filter(Boolean);
     }
 
-    /* ── 4. 2D 顶面状态 SVG 渲染器 ───────────────────────────────── */
-    function renderTopFaceSVG(item) {
-        var svg = document.getElementById('topface-svg');
-        var html = '';
-
-        var yellow = '#FFE600';
-        var dark = '#343a46';
-        var border = '#141720';
-
-        var stateMap = item.topState || [
-            1,1,1,
-            1,1,1,
-            1,1,1
-        ];
-
-        var startX = 8, startY = 8, cellSize = 14, gap = 1.5;
-        for (var r = 0; r < 3; r++) {
-            for (var c = 0; c < 3; c++) {
-                var idx = r * 3 + c;
-                var isYellow = stateMap[idx] === 1;
-                var x = startX + c * (cellSize + gap);
-                var y = startY + r * (cellSize + gap);
-                html += '<rect x="' + x + '" y="' + y + '" width="' + cellSize + '" height="' + cellSize + '" rx="2" fill="' + (isYellow ? yellow : dark) + '" stroke="' + border + '" stroke-width="1"/>';
-            }
-        }
-
-        if (stateMap.length >= 21) {
-            var sideColors = stateMap.slice(9);
-            // 上侧 (0,1,2)
-            for (var i = 0; i < 3; i++) {
-                var sx = startX + i * (cellSize + gap);
-                var sy = startY - 5;
-                html += '<rect x="' + sx + '" y="' + sy + '" width="' + cellSize + '" height="' + 3.5 + '" rx="1" fill="' + (sideColors[i] === 1 ? yellow : dark) + '"/>';
-            }
-            // 右侧 (3,4,5)
-            for (var i = 0; i < 3; i++) {
-                var sx = startX + 3 * (cellSize + gap) - gap + 1.5;
-                var sy = startY + i * (cellSize + gap);
-                html += '<rect x="' + sx + '" y="' + sy + '" width="3.5" height="' + cellSize + '" rx="1" fill="' + (sideColors[3 + i] === 1 ? yellow : dark) + '"/>';
-            }
-            // 下侧 (6,7,8)
-            for (var i = 0; i < 3; i++) {
-                var sx = startX + i * (cellSize + gap);
-                var sy = startY + 3 * (cellSize + gap) - gap + 1.5;
-                html += '<rect x="' + sx + '" y="' + sy + '" width="' + cellSize + '" height="' + 3.5 + '" rx="1" fill="' + (sideColors[6 + i] === 1 ? yellow : dark) + '"/>';
-            }
-            // 左侧 (9,10,11)
-            for (var i = 0; i < 3; i++) {
-                var sx = startX - 5;
-                var sy = startY + i * (cellSize + gap);
-                html += '<rect x="' + sx + '" y="' + sy + '" width="3.5" height="' + cellSize + '" rx="1" fill="' + (sideColors[9 + i] === 1 ? yellow : dark) + '"/>';
-            }
-        }
-
-        svg.innerHTML = html;
+    function getCurrentCase() {
+        var list = FORMULA_DATABASE[state.currentType] || [];
+        return list[state.currentCaseIndex] || list[0];
     }
 
-    /* ── 5. 公式与 3D 播放器状态同步 ─────────────────────────────── */
-    function setupCurrentCase() {
-        var list = FORMULA_DATABASE[state.currentType];
-        var item = list[state.currentCaseIndex];
+    function formatMove(move) {
+        if (state.showChinese) {
+            return CHINESE_MOVE_NAMES[move] || move;
+        }
+        return move;
+    }
+
+    /* ── 加载并渲染当前公式 ── */
+    function loadCurrentCase(keepPlayState) {
+        var item = getCurrentCase();
         if (!item) return;
 
-        groupTagEl.textContent = item.group;
-        renderTopFaceSVG(item);
-
-        state.activeTokens = parseAlgTokens(item.alg);
+        state.tokens = parseTokens(item.alg);
         state.currentStep = 0;
+        if (!keepPlayState) state.isPlaying = false;
 
-        // 设置 3D twisty-player 的公式与初始姿态
-        if (player) {
-            player.setAttribute('alg', item.alg);
-            player.setAttribute('experimental-setup-anchor', 'end');
+        cardCaseId.textContent = item.id;
+        cardCaseName.textContent = state.showChinese ? item.cn : item.en;
+        cardCaseGroup.textContent = item.group || '';
 
-            // 根据分类配置标准贴纸模式
+        renderFormulaDisplay();
+        renderTokensRibbon();
+        updateProgressUI();
+        updatePlayBtnUI();
+        applyCubeState();
+    }
+
+    /* 渲染中间公式卡片 */
+    function renderFormulaDisplay() {
+        var item = getCurrentCase();
+        var isSol = state.displayMode === 'solution';
+
+        formulaCard.className = 'formula-area ' + (isSol ? 'solution-active' : '');
+        modeBadge.className = 'mode-badge ' + (isSol ? 'solution' : 'scramble');
+        modeBadge.textContent = isSol ? '解法' : '打乱';
+        hintToggleMode.textContent = isSol ? '切打乱' : '切解法';
+
+        var moves = state.tokens;
+        var html = '';
+        moves.forEach(function (m) {
+            html += '<span class="formula-move">' + formatMove(m) + '</span>';
+        });
+        formulaText.className = 'formula-text ' + (isSol ? 'solution' : 'scramble');
+        formulaText.innerHTML = html;
+    }
+
+    /* 渲染步骤 Tokens 缎带 */
+    function renderTokensRibbon() {
+        var moves = state.tokens;
+        var html = '';
+        moves.forEach(function (m, idx) {
+            var cls = 'move-token ';
+            if (idx < state.currentStep) {
+                cls += 'move-done';
+            } else if (idx === state.currentStep) {
+                cls += 'move-current';
+            } else {
+                cls += 'move-pending';
+            }
+            html += '<button class="' + cls + '" data-step="' + idx + '">' + formatMove(m) + '</button>';
+        });
+        formulaTokensEl.innerHTML = html;
+
+        // 当前步骤中文讲解
+        if (state.currentStep >= 0 && state.currentStep < state.tokens.length) {
+            var currentMove = state.tokens[state.currentStep];
+            stepHintCn.textContent = '当前第 ' + (state.currentStep + 1) + ' 步: ' + currentMove + ' (' + (CHINESE_MOVE_NAMES[currentMove] || '转动') + ')';
+        } else if (state.currentStep >= state.tokens.length) {
+            stepHintCn.textContent = '🎉 公式演示完成！';
+        } else {
+            stepHintCn.textContent = '点击播放或步进练习';
+        }
+
+        // 绑定 token 点击快速跳转
+        var tokenBtns = formulaTokensEl.querySelectorAll('.move-token');
+        tokenBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var step = parseInt(btn.getAttribute('data-step'), 10);
+                jumpToStep(step);
+                sendLog('operation');
+            });
+        });
+    }
+
+    /* 更新进度条 */
+    function updateProgressUI() {
+        var total = state.tokens.length;
+        var cur = state.currentStep;
+        var pct = total === 0 ? 0 : Math.min(100, Math.round((cur / total) * 100));
+        progressFill.style.width = pct + '%';
+        progressText.textContent = cur + ' / ' + total;
+    }
+
+    function updatePlayBtnUI() {
+        if (state.isPlaying) {
+            btnPlay.classList.add('playing');
+            btnPlay.textContent = '⏸';
+            btnPlay.title = '暂停';
+        } else {
+            btnPlay.classList.remove('playing');
+            btnPlay.textContent = '▶';
+            btnPlay.title = '播放';
+        }
+    }
+
+    /* 应用 3D Twisty Player 属性与状态 */
+    function applyCubeState() {
+        var item = getCurrentCase();
+        if (!item || !player) return;
+
+        // 遮罩设置
+        if (state.maskEnabled) {
             if (state.currentType === 'OLL') {
                 player.setAttribute('experimental-stickering', 'OLL');
             } else if (state.currentType === 'PLL') {
@@ -10589,257 +10827,239 @@ twisty-alg-viewer {
             } else {
                 player.removeAttribute('experimental-stickering');
             }
-
-            if (typeof player.jumpToStart === 'function') {
-                player.jumpToStart();
-            }
-        }
-
-        updateRibbon();
-        updateHUD();
-        updatePlayButtonUI();
-    }
-
-    function updateRibbon() {
-        var html = '';
-        state.activeTokens.forEach(function (token, idx) {
-            var cls = 'vc-alg-token';
-            if (idx === state.currentStep) cls += ' current';
-            else if (idx < state.currentStep) cls += ' passed';
-            html += '<span class="' + cls + '" data-idx="' + idx + '">' + token + '</span>';
-        });
-        ribbonEl.innerHTML = html;
-
-        var activeEl = ribbonEl.querySelector('.vc-alg-token.current');
-        if (activeEl) {
-            activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-    }
-
-    function updateHUD() {
-        if (state.currentStep < state.activeTokens.length) {
-            var move = state.activeTokens[state.currentStep];
-            hudMoveEl.textContent = move;
-            hudCnEl.textContent = CHINESE_MOVE_NAMES[move] || '进行中';
+            toolMask.classList.add('active');
         } else {
-            hudMoveEl.textContent = '✓';
-            hudCnEl.textContent = '已还原';
-        }
-    }
-
-    function updatePlayButtonUI() {
-        if (state.isPlaying) {
-            playText.textContent = '暂停';
-            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-            playBtn.classList.remove('primary');
-        } else {
-            playText.textContent = '播放';
-            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-            playBtn.classList.add('primary');
-        }
-    }
-
-    function populateSelect() {
-        var list = FORMULA_DATABASE[state.currentType];
-        var html = '';
-        list.forEach(function (item, idx) {
-            var label = state.isEnglish ? (item.id + ' - ' + item.en) : (item.id + ' - ' + item.cn);
-            html += '<option value="' + idx + '"' + (idx === state.currentCaseIndex ? ' selected' : '') + '>' + label + '</option>';
-        });
-        selectEl.innerHTML = html;
-    }
-
-    /* ── 6. 3D 控制器与播放步进 ──────────────────────────────────── */
-    function stepForward() {
-        if (!player || !player.controller) return;
-        var anim = player.controller.animationController;
-        if (anim.playing) anim.pause();
-        anim.play({ direction: 1, untilBoundary: 1 });
-        if (state.currentStep < state.activeTokens.length) {
-            state.currentStep++;
-            updateRibbon();
-            updateHUD();
-        }
-    }
-
-    function stepBackward() {
-        if (!player || !player.controller) return;
-        var anim = player.controller.animationController;
-        if (anim.playing) anim.pause();
-        anim.play({ direction: -1, untilBoundary: 1 });
-        if (state.currentStep > 0) {
-            state.currentStep--;
-            updateRibbon();
-            updateHUD();
-        }
-    }
-
-    function togglePlay() {
-        if (!player || !player.controller) return;
-        var anim = player.controller.animationController;
-        if (anim.playing) {
-            anim.pause();
-            state.isPlaying = false;
-            updatePlayButtonUI();
-        } else {
-            // 如果已在末尾，从头重新播放
-            if (state.currentStep >= state.activeTokens.length) {
-                player.jumpToStart();
-                state.currentStep = 0;
-                updateRibbon();
-                updateHUD();
-            }
-            anim.play();
-            state.isPlaying = true;
-            updatePlayButtonUI();
-        }
-    }
-
-    // 监听 formula ribbon 中点击单步直接跳转
-    ribbonEl.addEventListener('click', function (e) {
-        var tokenEl = e.target.closest('.vc-alg-token');
-        if (!tokenEl) return;
-        var idx = parseInt(tokenEl.getAttribute('data-idx'), 10);
-        if (isNaN(idx) || !player) return;
-
-        if (player.controller && player.controller.animationController) {
-            var anim = player.controller.animationController;
-            if (anim.playing) anim.pause();
+            player.removeAttribute('experimental-stickering');
+            toolMask.classList.remove('active');
         }
 
-        player.jumpToStart();
-        if (idx > 0 && player.controller) {
-            for (var i = 0; i < idx; i++) {
-                player.controller.animationController.play({ direction: 1, untilBoundary: 1 });
-            }
-        }
-        state.currentStep = idx;
-        updateRibbon();
-        updateHUD();
-        sendGenuiLog('operation');
-    });
+        // 公式与锚点设置 (逆推就绪练习状态)
+        player.setAttribute('alg', item.alg);
+        player.setAttribute('experimental-setup-anchor', 'end');
 
-    /* ── 7. 事件绑定与打点规范 ──────────────────────────────────── */
-    // Tabs 切换
-    document.getElementById('type-tabs').addEventListener('click', function (e) {
-        var btn = e.target.closest('.vc-tab-btn');
-        if (!btn) return;
-        if (player && player.controller) player.controller.animationController.pause();
-        state.isPlaying = false;
-
-        document.querySelectorAll('#type-tabs .vc-tab-btn').forEach(function (b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        state.currentType = btn.getAttribute('data-type');
-        state.currentCaseIndex = 0;
-        populateSelect();
-        setupCurrentCase();
-        sendGenuiLog('operation');
-    });
-
-    // 下拉选择公式
-    selectEl.addEventListener('change', function () {
-        if (player && player.controller) player.controller.animationController.pause();
-        state.isPlaying = false;
-        state.currentCaseIndex = parseInt(selectEl.value, 10);
-        setupCurrentCase();
-        sendGenuiLog('operation');
-    });
-
-    // 中英文切换
-    document.getElementById('btn-lang').addEventListener('click', function () {
-        state.isEnglish = !state.isEnglish;
-        populateSelect();
-        sendGenuiLog('operation');
-    });
-
-    // 步进按钮
-    document.getElementById('btn-next').addEventListener('click', function () {
-        stepForward();
-        sendGenuiLog('operation');
-    });
-
-    document.getElementById('btn-prev').addEventListener('click', function () {
-        stepBackward();
-        sendGenuiLog('operation');
-    });
-
-    playBtn.addEventListener('click', function () {
-        togglePlay();
-        sendGenuiLog('operation');
-    });
-
-    // 表头复位
-    document.getElementById('btn-reset').addEventListener('click', function () {
-        if (player) {
-            if (player.controller) player.controller.animationController.pause();
-            player.cameraLatitude = 25;
-            player.cameraLongitude = 20;
+        // 复位到开头
+        if (typeof player.jumpToStart === 'function') {
             player.jumpToStart();
         }
-        state.isPlaying = false;
-        state.currentStep = 0;
-        updateRibbon();
-        updateHUD();
-        updatePlayButtonUI();
-        sendGenuiLog('operation');
-    });
+    }
 
-    // 气泡提示
-    var tipsBtn = document.getElementById('btn-info');
-    var tipsTooltip = document.getElementById('tips-tooltip');
-    tipsBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        tipsTooltip.classList.toggle('visible');
-    });
-    document.addEventListener('click', function () {
-        tipsTooltip.classList.remove('visible');
-    });
-
-    /* ── 8. 初始化与 TwistyPlayer 状态监听 ───────────────────────── */
-    function initPlayerTracking() {
+    /* 步进跳转 */
+    function jumpToStep(targetIndex) {
         if (!player) return;
+        state.isPlaying = false;
+        updatePlayBtnUI();
 
-        // 订阅当前步数进度 (currentMoveInfo / patternIndex)
-        var moveInfo = player.experimentalModel && player.experimentalModel.currentMoveInfo;
-        if (moveInfo && typeof moveInfo.subscribe === 'function') {
-            moveInfo.subscribe(function (info) {
-                if (info && typeof info.patternIndex === 'number') {
-                    if (info.patternIndex !== state.currentStep) {
-                        state.currentStep = info.patternIndex;
-                        updateRibbon();
-                        updateHUD();
-                    }
-                }
-            });
+        if (typeof player.jumpToStart === 'function') {
+            player.jumpToStart();
         }
 
-        // 订阅播放状态改变
+        state.currentStep = Math.max(0, Math.min(targetIndex, state.tokens.length));
+        for (var i = 0; i < state.currentStep; i++) {
+            if (typeof player.stepForward === 'function') {
+                player.stepForward();
+            }
+        }
+        renderTokensRibbon();
+        updateProgressUI();
+    }
+
+    /* ── 事件监听 ── */
+
+    // 播放 / 暂停
+    btnPlay.addEventListener('click', function () {
+        if (!player) return;
+        if (state.isPlaying) {
+            if (typeof player.pause === 'function') player.pause();
+            state.isPlaying = false;
+        } else {
+            if (state.currentStep >= state.tokens.length) {
+                if (typeof player.jumpToStart === 'function') player.jumpToStart();
+                state.currentStep = 0;
+            }
+            if (typeof player.play === 'function') player.play();
+            state.isPlaying = true;
+        }
+        updatePlayBtnUI();
+        sendLog('operation');
+    });
+
+    // 上一步
+    btnPrev.addEventListener('click', function () {
+        if (!player) return;
+        state.isPlaying = false;
+        updatePlayBtnUI();
+        if (typeof player.stepBackward === 'function') player.stepBackward();
+        if (state.currentStep > 0) state.currentStep--;
+        renderTokensRibbon();
+        updateProgressUI();
+        sendLog('operation');
+    });
+
+    // 下一步
+    btnNext.addEventListener('click', function () {
+        if (!player) return;
+        state.isPlaying = false;
+        updatePlayBtnUI();
+        if (typeof player.stepForward === 'function') player.stepForward();
+        if (state.currentStep < state.tokens.length) state.currentStep++;
+        renderTokensRibbon();
+        updateProgressUI();
+        sendLog('operation');
+    });
+
+    // 起点
+    btnStart.addEventListener('click', function () {
+        if (!player) return;
+        state.isPlaying = false;
+        updatePlayBtnUI();
+        if (typeof player.jumpToStart === 'function') player.jumpToStart();
+        state.currentStep = 0;
+        renderTokensRibbon();
+        updateProgressUI();
+        sendLog('operation');
+    });
+
+    // 终点
+    btnEnd.addEventListener('click', function () {
+        if (!player) return;
+        state.isPlaying = false;
+        updatePlayBtnUI();
+        if (typeof player.jumpToEnd === 'function') player.jumpToEnd();
+        state.currentStep = state.tokens.length;
+        renderTokensRibbon();
+        updateProgressUI();
+        sendLog('operation');
+    });
+
+    // 视角复位
+    toolView.addEventListener('click', function () {
+        if (!player) return;
+        player.setAttribute('camera-latitude', '25');
+        player.setAttribute('camera-longitude', '20');
+        player.setAttribute('camera-distance', '4.5');
+        sendLog('operation');
+    });
+
+    // 遮罩切换
+    toolMask.addEventListener('click', function () {
+        state.maskEnabled = !state.maskEnabled;
+        applyCubeState();
+        sendLog('operation');
+    });
+
+    // 中英切换
+    toolLang.addEventListener('click', function () {
+        state.showChinese = !state.showChinese;
+        toolLang.classList.toggle('active', state.showChinese);
+        loadCurrentCase(true);
+        sendLog('operation');
+    });
+
+    // 切换下一个公式
+    toolNext.addEventListener('click', function () {
+        var list = FORMULA_DATABASE[state.currentType] || [];
+        state.currentCaseIndex = (state.currentCaseIndex + 1) % list.length;
+        loadCurrentCase();
+        sendLog('operation');
+    });
+
+    // 重置状态
+    toolReset.addEventListener('click', function () {
+        jumpToStep(0);
+        sendLog('operation');
+    });
+
+    // 点击公式卡片切解法/打乱
+    formulaCard.addEventListener('click', function () {
+        state.displayMode = state.displayMode === 'solution' ? 'scramble' : 'solution';
+        renderFormulaDisplay();
+        sendLog('operation');
+    });
+
+    // 分类切换 (F2L / OLL / PLL)
+    var switchBtns = document.querySelectorAll('#type-switch .switch-btn');
+    switchBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            switchBtns.forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            state.currentType = btn.getAttribute('data-type');
+            state.currentCaseIndex = 0;
+            loadCurrentCase();
+            sendLog('operation');
+        });
+    });
+
+    // 列表选题弹窗
+    toolList.addEventListener('click', function () {
+        renderModalGrid();
+        caseModal.classList.add('open');
+        sendLog('operation');
+    });
+
+    btnModalClose.addEventListener('click', function () {
+        caseModal.classList.remove('open');
+    });
+
+    caseModal.addEventListener('click', function (e) {
+        if (e.target === caseModal) {
+            caseModal.classList.remove('open');
+        }
+    });
+
+    function renderModalGrid() {
+        modalTitle.textContent = '选择公式 (' + state.currentType + ')';
+        var list = FORMULA_DATABASE[state.currentType] || [];
+        var html = '';
+        list.forEach(function (item, idx) {
+            var isSel = idx === state.currentCaseIndex;
+            html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
+            html += '  <div class="modal-item-id">' + item.id + '</div>';
+            html += '  <div class="modal-item-name">' + (state.showChinese ? item.cn : item.en) + '</div>';
+            html += '</div>';
+        });
+        modalGrid.innerHTML = html;
+
+        var items = modalGrid.querySelectorAll('.modal-case-item');
+        items.forEach(function (el) {
+            el.addEventListener('click', function () {
+                var idx = parseInt(el.getAttribute('data-idx'), 10);
+                state.currentCaseIndex = idx;
+                loadCurrentCase();
+                caseModal.classList.remove('open');
+                sendLog('operation');
+            });
+        });
+    }
+
+    // 帮助说明
+    document.getElementById('btn-info').addEventListener('click', function () {
+        alert('【魔方公式速查使用提示】\n\n1. 拖拽 3D 魔方可任意角度旋转查看。\n2. 点击【视角】可瞬间平滑归位。\n3. 点击【遮罩】可高亮顶面黄色块。\n4. 点击公式卡片可在【解法】与【打乱】之间切换。\n5. 点击下方分步步骤可直接跳转至该步。');
+        sendLog('operation');
+    });
+
+    // 监听 twisty-player 自定义元素的播放时间线更新
+    customElements.whenDefined('twisty-player').then(function () {
         var timeline = player.experimentalModel && player.experimentalModel.coarseTimelineInfo;
         if (timeline && typeof timeline.subscribe === 'function') {
             timeline.subscribe(function (info) {
                 if (info) {
                     if (info.atEnd) {
                         state.isPlaying = false;
-                        state.currentStep = state.activeTokens.length;
-                        updateRibbon();
-                        updateHUD();
-                        updatePlayButtonUI();
+                        state.currentStep = state.tokens.length;
+                        renderTokensRibbon();
+                        updateProgressUI();
+                        updatePlayBtnUI();
                     } else if (typeof info.playing === 'boolean' && info.playing !== state.isPlaying) {
                         state.isPlaying = info.playing;
-                        updatePlayButtonUI();
+                        updatePlayBtnUI();
                     }
                 }
             });
         }
-    }
-
-    populateSelect();
-    setupCurrentCase();
-
-    // 当 Web Components 自定义元素完全就绪后开启数据订阅
-    customElements.whenDefined('twisty-player').then(function () {
-        initPlayerTracking();
     });
+
+    // 初始加载
+    loadCurrentCase();
 
 })();
 </script>
