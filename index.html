@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小工具 · 魔方公式教学</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f1117;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        :root {
+            --cos-color-bg: #12141a;
+            --cos-vcard-color-bg: #181b24;
+            --cos-card-color-bg: #202430;
+            --cos-color-text: #f0f2f5;
+            --cos-color-text-minor: #8c93a0;
+            --cos-color-text-sub: #5f6675;
+            --cos-color-border: #2c3140;
+            --cos-color-border-minor: #262a36;
+            --cos-color-primary: #3875f6;
+            --cos-color-primary-hover: #5289f8;
+            --cos-color-primary-sub: rgba(56, 117, 246, 0.15);
+            --cos-color-tag-bg: #262b3a;
+            --cos-rounded-sm: 12px;
+            --cos-rounded-xs: 6px;
+            --cos-text-body-lg: 15px;
+            --cos-text-body: 13px;
+            --cos-text-body-sm: 11px;
+        }
+
+        .vc-component-wrapper {
+            width: 100%;
+            max-width: 460px;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        @supports not (aspect-ratio: 1 / 1) {
+            .vc-component-wrapper {
+                padding-top: 100%;
+                height: 0;
+            }
+        }
+
+        .vc-component-container {
+            position: absolute;
+            inset: 0;
+            background: var(--cos-vcard-color-bg);
+            border-radius: var(--cos-rounded-sm);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            overflow: hidden;
+            border: 1px solid var(--cos-color-border);
+            color: var(--cos-color-text);
+        }
+
+        .vc-component-container * {
+            box-sizing: border-box;
+        }
+
+        /* ── 表头 ─────────────────────────────────────────── */
+        .vc-component-header {
+            height: 44px;
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 0.5px solid var(--cos-color-border-minor);
+            background: rgba(255, 255, 255, 0.02);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 20;
+        }
+
+        .vc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vc-header-title {
+            font-size: var(--cos-text-body-lg);
+            font-weight: 600;
+            color: var(--cos-color-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vc-badge {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: var(--cos-color-primary-sub);
+            color: var(--cos-color-primary);
+            font-weight: 500;
+        }
+
+        .vc-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vc-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--cos-color-text-minor);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .vc-icon-btn:hover {
+            color: var(--cos-color-text);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .vc-icon-svg {
+            width: 17px;
+            height: 17px;
+            fill: currentColor;
+        }
+
+        /* 气泡提示 */
+        .vc-tips-tooltip {
+            display: none;
+            position: absolute;
+            top: 42px;
+            right: 12px;
+            width: calc(100% - 24px);
+            max-width: 320px;
+            padding: 10px 12px;
+            font-size: var(--cos-text-body-sm);
+            line-height: 1.5;
+            color: #d1d5db;
+            background: #232734;
+            border: 1px solid var(--cos-color-border);
+            border-radius: var(--cos-rounded-xs);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .vc-tips-tooltip.visible {
+            display: block;
+        }
+
+        /* ── 卡片主结构 ────────────────────────────────────── */
+        .vc-component-card-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* ── 画布区 (高度约 52%) ────────────────────────────── */
+        .vc-component-demo {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 40%, #1a1e2b 0%, #0d0f15 100%);
+            touch-action: none;
+        }
+
+        /* 3D Twisty Player 容器 */
+        twisty-player {
+            width: 100%;
+            height: 100%;
+            display: grid;
+        }
+
+        /* 画布浮层 1：2D 顶面状态指示器 */
+        .vc-topface-hud {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 48px;
+            height: 48px;
+            background: rgba(18, 21, 30, 0.85);
+            backdrop-filter: blur(6px);
+            border: 1px solid var(--cos-color-border);
+            border-radius: 6px;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .vc-topface-hud svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 画布浮层 2：视角旋转提示 */
+        .vc-canvas-hint {
+            position: absolute;
+            bottom: 6px;
+            left: 8px;
+            font-size: 10px;
+            color: var(--cos-color-text-sub);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            z-index: 10;
+        }
+
+        /* 画布浮层 3：当前动作步骤 HUD */
+        .vc-step-hud {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            text-align: right;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .vc-current-move-badge {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffe600;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 2px 7px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 230, 0, 0.3);
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .vc-current-move-cn {
+            font-size: 10px;
+            color: var(--cos-color-text-minor);
+            margin-top: 2px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        /* ── 操作控制区 (高度约 48%) ────────────────────────── */
+        .vc-component-operate {
+            background: var(--cos-color-bg);
+            border-top: 0.5px solid var(--cos-color-border-minor);
+            padding: 8px 12px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* 第一行：Tabs 与中英文开关 */
+        .vc-operate-row-tabs {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .vc-tab-group {
+            display: flex;
+            background: var(--cos-card-color-bg);
+            padding: 2px;
+            border-radius: 6px;
+            border: 1px solid var(--cos-color-border-minor);
+            flex: 1;
+        }
+
+        .vc-tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--cos-color-text-minor);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .vc-tab-btn.active {
+            background: var(--cos-color-primary);
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(56, 117, 246, 0.3);
+        }
+
+        .vc-lang-btn {
+            border: 1px solid var(--cos-color-border);
+            background: var(--cos-card-color-bg);
+            color: var(--cos-color-text-minor);
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .vc-lang-btn:hover {
+            color: var(--cos-color-text);
+            border-color: var(--cos-color-primary);
+        }
+
+        /* 第二行：公式筛选下拉与分组 */
+        .vc-operate-row-select {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vc-select-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .vc-custom-select {
+            width: 100%;
+            background: var(--cos-card-color-bg);
+            color: var(--cos-color-text);
+            border: 1px solid var(--cos-color-border);
+            border-radius: 5px;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238c93a0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+        }
+
+        .vc-custom-select:focus {
+            border-color: var(--cos-color-primary);
+        }
+
+        .vc-case-group-tag {
+            font-size: 10px;
+            padding: 3px 6px;
+            background: var(--cos-card-color-bg);
+            color: var(--cos-color-text-sub);
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* 第三行：公式符号列表展示 */
+        .vc-formula-ribbon {
+            background: #141720;
+            border: 1px solid var(--cos-color-border-minor);
+            border-radius: 5px;
+            padding: 3px 6px;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .vc-formula-ribbon::-webkit-scrollbar {
+            display: none;
+        }
+
+        .vc-alg-token {
+            font-family: ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--cos-color-text-minor);
+            padding: 1px 4px;
+            border-radius: 3px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .vc-alg-token.current {
+            background: #ffe600;
+            color: #11141a;
+            box-shadow: 0 0 6px rgba(255, 230, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .vc-alg-token.passed {
+            color: var(--cos-color-text-sub);
+            text-decoration: line-through;
+        }
+
+        /* 第四行：步进控制按钮 */
+        .vc-operate-row-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+        }
+
+        .vc-ctrl-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 28px;
+            background: var(--cos-card-color-bg);
+            border: 1px solid var(--cos-color-border);
+            color: var(--cos-color-text);
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .vc-ctrl-btn:active {
+            transform: scale(0.98);
+        }
+
+        .vc-ctrl-btn.primary {
+            background: var(--cos-color-primary);
+            border-color: var(--cos-color-primary);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .vc-ctrl-btn.primary:hover {
+            background: var(--cos-color-primary-hover);
+        }
+
+        .vc-ctrl-svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+        }
+
+        /* 底部合规品牌心智提示 */
+        .vc-brand-footer {
+            font-size: 9px;
+            color: var(--cos-color-text-sub);
+            text-align: center;
+            line-height: 1;
+            margin-top: 1px;
+        }
+    </style>
+    <!-- 引入本地已编译优化且合规的 cubing.js twisty 引擎 -->
+    <script type="module" src="./static/cubing-twisty.js"></script>
+</head>
+<body>
+<div class="vc-component-wrapper">
+    <div class="vc-component-container" id="vc-container">
+        <!-- 1. 表头 -->
+        <div class="vc-component-header">
+            <div class="vc-header-left">
+                <span class="vc-header-title">
+                    小工具 · 魔方公式
+                    <span class="vc-badge">3D交互</span>
+                </span>
+            </div>
+            <div class="vc-header-actions">
+                <button class="vc-icon-btn" id="btn-info" title="功能说明" aria-label="功能说明">
+                    <svg class="vc-icon-svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </button>
+                <button class="vc-icon-btn" id="btn-reset" title="复位视角与公式" aria-label="复位">
+                    <svg class="vc-icon-svg" viewBox="0 0 24 24">
+                        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- 气泡提示 -->
+            <div class="vc-tips-tooltip" id="tips-tooltip">
+                <strong>土豆魔方 · 3D公式速查</strong><br>
+                1. 基于官方 cubing.js 真实物理级 3D 渲染，支持 360° 拖拽旋转。<br>
+                2. 支持 F2L / OLL / PLL 全套精选核心公式，分步高亮与连续播放。<br>
+                3. 支持一键切换中英文俗称与国际标准代号。<br>
+                <em>更多对战排位与计时同步，可搜索微信小程序「土豆魔方」。</em>
+            </div>
+        </div>
+
+        <!-- 2. 卡片主体 -->
+        <div class="vc-component-card-wrapper">
+            <!-- 3D 渲染展示区 -->
+            <div class="vc-component-demo" id="demo-area">
+                <twisty-player
+                    id="cube-player"
+                    puzzle="3x3x3"
+                    background="none"
+                    control-panel="none"
+                    experimental-setup-anchor="end"
+                    camera-latitude="25"
+                    camera-longitude="20"
+                    tempo-scale="2.0"
+                ></twisty-player>
+                <!-- 2D 顶面投影指示器 -->
+                <div class="vc-topface-hud" id="topface-hud" title="顶面状态">
+                    <svg id="topface-svg" viewBox="0 0 60 60"></svg>
+                </div>
+                <!-- 视角提示 -->
+                <div class="vc-canvas-hint">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></svg>
+                    拖拽旋转 3D 魔方
+                </div>
+                <!-- 当前步骤指示 -->
+                <div class="vc-step-hud">
+                    <div class="vc-current-move-badge" id="hud-move">-</div>
+                    <div class="vc-current-move-cn" id="hud-cn">就绪</div>
+                </div>
+            </div>
+
+            <!-- 操作控制区 -->
+            <div class="vc-component-operate">
+                <!-- 第一行：Tabs 与中英文开关 -->
+                <div class="vc-operate-row-tabs">
+                    <div class="vc-tab-group" id="type-tabs">
+                        <button class="vc-tab-btn" data-type="F2L">F2L (41)</button>
+                        <button class="vc-tab-btn active" data-type="OLL">OLL (57)</button>
+                        <button class="vc-tab-btn" data-type="PLL">PLL (21)</button>
+                    </div>
+                    <button class="vc-lang-btn" id="btn-lang" title="切换中英文">中 / EN</button>
+                </div>
+
+                <!-- 第二行：公式筛选下拉与分组 -->
+                <div class="vc-operate-row-select">
+                    <span class="vc-case-group-tag" id="group-tag">十字组</span>
+                    <div class="vc-select-container">
+                        <select class="vc-custom-select" id="case-select"></select>
+                    </div>
+                </div>
+
+                <!-- 第三行：公式动作符号条 -->
+                <div class="vc-formula-ribbon" id="formula-ribbon"></div>
+
+                <!-- 第四行：步进播放控制 -->
+                <div class="vc-operate-row-controls">
+                    <button class="vc-ctrl-btn" id="btn-prev" title="上一步">
+                        <svg class="vc-ctrl-svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        上一步
+                    </button>
+                    <button class="vc-ctrl-btn primary" id="btn-play">
+                        <svg class="vc-ctrl-svg" id="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <span id="play-text">播放</span>
+                    </button>
+                    <button class="vc-ctrl-btn" id="btn-next" title="下一步">
+                        下一步
+                        <svg class="vc-ctrl-svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                </div>
+
+                <!-- 品牌心智提示 -->
+                <div class="vc-brand-footer">
+                    土豆魔方 · 专业 3D 动画演示
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ── 1. 核心精选 CFOP 公式数据库 (纯前端自包含字典) ───────────────────────── */
+    var FORMULA_DATABASE = {
+        F2L: [
+            { id: 'F2L-01', en: 'Basic Insert', cn: '基本型 (右上入槽)', group: '基本型', alg: "U R U' R'" },
+            { id: 'F2L-02', en: 'Left Insert', cn: '基本型 (左上入槽)', group: '基本型', alg: "U' L' U L" },
+            { id: 'F2L-03', en: 'Diff Color Top', cn: '顶异色分离', group: '角块顶棱块顶', alg: "R U' R' U2 R U R'" },
+            { id: 'F2L-04', en: 'Same Color Top', cn: '顶同色入槽', group: '角块顶棱块顶', alg: "R' U2 R2 U R2' U R" },
+            { id: 'F2L-05', en: 'Corner in Bottom', cn: '角在底异色', group: '角底棱顶', alg: "U R U' R' U' R U R'" },
+            { id: 'F2L-06', en: 'Corner White Up', cn: '角白朝上', group: '特殊朝向', alg: "R U2 R' U' R U R'" }
+        ],
+        OLL: [
+            { id: 'OLL-27', en: 'Sune (Fish 1)', cn: '小鱼1', group: '十字组', alg: "R U R' U R U2 R'", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,1,0,0,0,1,0,0,0,1,0] },
+            { id: 'OLL-26', en: 'Anti-Sune (Fish 2)', cn: '小鱼2', group: '十字组', alg: "R U2 R' U' R U' R'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,0,1,0,0,0,1,0,0,0] },
+            { id: 'OLL-21', en: 'H-Shape (Cross)', cn: '十字形 (H)', group: '十字组', alg: "R U2 R' U' R U R' U' R U' R'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,1,0,0,0,1,0,1,0,0,0] },
+            { id: 'OLL-22', en: 'Pi (Headlights)', cn: '十字形 (Pi)', group: '十字组', alg: "R U2 R2 U' R2 U' R2 U2 R", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,1,0,1,1,0,0,0,0,0] },
+            { id: 'OLL-23', en: 'Headlights', cn: '车灯 (十字)', group: '十字组', alg: "R2 D R' U2 R D' R' U2 R'", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,0,1,0,1,0,0,0,1,0,1] },
+            { id: 'OLL-24', en: 'Chameleon', cn: '变色龙', group: '十字组', alg: "r U R' U' r' F R F'", topState: [0,1,0, 1,1,1, 0,1,0, 1,0,0,0,0,0,0,0,1,1,0,1] },
+            { id: 'OLL-25', en: 'Bowtie', cn: '领结形', group: '十字组', alg: "F' r U R' U' r' F R", topState: [0,1,0, 1,1,1, 0,1,0, 0,0,1,1,0,0,1,0,0,0,0,1] },
+            { id: 'OLL-33', en: 'T-Shape', cn: 'T字形', group: 'T字组', alg: "R U R' U' R' F R F'", topState: [0,0,0, 1,1,1, 0,1,0, 0,1,0,0,0,0,0,1,0,0,0,0] },
+            { id: 'OLL-45', en: 'Line (Bar)', cn: '一字形', group: '一字组', alg: "F R U R' U' F'", topState: [0,0,0, 1,1,1, 0,0,0, 0,1,0,0,0,0,0,1,0,0,0,0] },
+            { id: 'OLL-44', en: 'Gun (Angle)', cn: '拐角形', group: '拐角组', alg: "f R U R' U' f'", topState: [0,1,0, 1,1,0, 0,0,0, 0,0,0,0,1,0,0,0,0,0,1,0] }
+        ],
+        PLL: [
+            { id: 'T-Perm', en: 'T-Perm', cn: 'T字换 (角棱对换)', group: '角棱互换', alg: "R U R' U' R' F R2 U' R' U' R U R' F'" },
+            { id: 'Ua-Perm', en: 'Ua-Perm', cn: 'Ua换 (三棱顺时针)', group: '棱块交换', alg: "R U' R U R U R U' R' U' R2" },
+            { id: 'Ub-Perm', en: 'Ub-Perm', cn: 'Ub换 (三棱逆时针)', group: '棱块交换', alg: "R2 U R U R' U' R' U' R' U R'" },
+            { id: 'H-Perm', en: 'H-Perm', cn: 'H换 (对棱互换)', group: '棱块交换', alg: "M2 U M2 U2 M2 U M2" },
+            { id: 'Z-Perm', en: 'Z-Perm', cn: 'Z换 (邻棱互换)', group: '棱块交换', alg: "M2 U M2 U M' U2 M2 U2 M'" },
+            { id: 'Aa-Perm', en: 'Aa-Perm', cn: 'Aa换 (三角顺时针)', group: '角块交换', alg: "x R' U R' D2 R U' R' D2 R2 x'" },
+            { id: 'Ab-Perm', en: 'Ab-Perm', cn: 'Ab换 (三角逆时针)', group: '角块交换', alg: "x R2 D2 R U R' D2 R U' R x'" },
+            { id: 'Y-Perm', en: 'Y-Perm', cn: 'Y字换 (对角对换)', group: '角棱互换', alg: "F R U' R' U' R U R' F' R U R' U' R' F R F'" },
+            { id: 'Jb-Perm', en: 'Jb-Perm', cn: 'Jb换 (同侧角棱换)', group: '角棱互换', alg: "R U R' F' R U R' U' R' F R2 U' R'" }
+        ]
+    };
+
+    var CHINESE_MOVE_NAMES = {
+        "R": "右顺", "R'": "右逆", "R2": "右双",
+        "L": "左顺", "L'": "左逆", "L2": "左双",
+        "U": "顶顺", "U'": "顶逆", "U2": "顶双",
+        "D": "底顺", "D'": "底逆", "D2": "底双",
+        "F": "前顺", "F'": "前逆", "F2": "前双",
+        "B": "后顺", "B'": "后逆", "B2": "后双",
+        "M": "中顺", "M'": "中逆", "M2": "中双",
+        "r": "右双层顺", "r'": "右双层逆", "f": "前双层顺", "f'": "前双层逆",
+        "x": "整架下翻", "x'": "整架上翻", "y": "整架左转", "y'": "整架右转"
+    };
+
+    /* ── 2. 状态管理 ───────────────────────────────────────────── */
+    var state = {
+        currentType: 'OLL',
+        currentCaseIndex: 0,
+        isEnglish: false,
+        activeTokens: [],
+        currentStep: 0,
+        isPlaying: false
+    };
+
+    function sendGenuiLog(area) {
+        if (window.genui && typeof window.genui.sendLog === 'function') {
+            window.genui.sendLog({ area: area || 'operation' });
+        }
+    }
+
+    /* ── 3. DOM 引用 ───────────────────────────────────────────── */
+    var player = document.getElementById('cube-player');
+    var selectEl = document.getElementById('case-select');
+    var ribbonEl = document.getElementById('formula-ribbon');
+    var groupTagEl = document.getElementById('group-tag');
+    var hudMoveEl = document.getElementById('hud-move');
+    var hudCnEl = document.getElementById('hud-cn');
+    var playBtn = document.getElementById('btn-play');
+    var playText = document.getElementById('play-text');
+    var playIcon = document.getElementById('play-icon');
+
+    function parseAlgTokens(algStr) {
+        return algStr.replace(/[()]/g, '').trim().split(/\s+/).filter(Boolean);
+    }
+
+    /* ── 4. 2D 顶面状态 SVG 渲染器 ───────────────────────────────── */
+    function renderTopFaceSVG(item) {
+        var svg = document.getElementById('topface-svg');
+        var html = '';
+
+        var yellow = '#FFE600';
+        var dark = '#343a46';
+        var border = '#141720';
+
+        var stateMap = item.topState || [
+            1,1,1,
+            1,1,1,
+            1,1,1
+        ];
+
+        var startX = 8, startY = 8, cellSize = 14, gap = 1.5;
+        for (var r = 0; r < 3; r++) {
+            for (var c = 0; c < 3; c++) {
+                var idx = r * 3 + c;
+                var isYellow = stateMap[idx] === 1;
+                var x = startX + c * (cellSize + gap);
+                var y = startY + r * (cellSize + gap);
+                html += '<rect x="' + x + '" y="' + y + '" width="' + cellSize + '" height="' + cellSize + '" rx="2" fill="' + (isYellow ? yellow : dark) + '" stroke="' + border + '" stroke-width="1"/>';
+            }
+        }
+
+        if (stateMap.length >= 21) {
+            var sideColors = stateMap.slice(9);
+            // 上侧 (0,1,2)
+            for (var i = 0; i < 3; i++) {
+                var sx = startX + i * (cellSize + gap);
+                var sy = startY - 5;
+                html += '<rect x="' + sx + '" y="' + sy + '" width="' + cellSize + '" height="' + 3.5 + '" rx="1" fill="' + (sideColors[i] === 1 ? yellow : dark) + '"/>';
+            }
+            // 右侧 (3,4,5)
+            for (var i = 0; i < 3; i++) {
+                var sx = startX + 3 * (cellSize + gap) - gap + 1.5;
+                var sy = startY + i * (cellSize + gap);
+                html += '<rect x="' + sx + '" y="' + sy + '" width="3.5" height="' + cellSize + '" rx="1" fill="' + (sideColors[3 + i] === 1 ? yellow : dark) + '"/>';
+            }
+            // 下侧 (6,7,8)
+            for (var i = 0; i < 3; i++) {
+                var sx = startX + i * (cellSize + gap);
+                var sy = startY + 3 * (cellSize + gap) - gap + 1.5;
+                html += '<rect x="' + sx + '" y="' + sy + '" width="' + cellSize + '" height="' + 3.5 + '" rx="1" fill="' + (sideColors[6 + i] === 1 ? yellow : dark) + '"/>';
+            }
+            // 左侧 (9,10,11)
+            for (var i = 0; i < 3; i++) {
+                var sx = startX - 5;
+                var sy = startY + i * (cellSize + gap);
+                html += '<rect x="' + sx + '" y="' + sy + '" width="3.5" height="' + cellSize + '" rx="1" fill="' + (sideColors[9 + i] === 1 ? yellow : dark) + '"/>';
+            }
+        }
+
+        svg.innerHTML = html;
+    }
+
+    /* ── 5. 公式与 3D 播放器状态同步 ─────────────────────────────── */
+    function setupCurrentCase() {
+        var list = FORMULA_DATABASE[state.currentType];
+        var item = list[state.currentCaseIndex];
+        if (!item) return;
+
+        groupTagEl.textContent = item.group;
+        renderTopFaceSVG(item);
+
+        state.activeTokens = parseAlgTokens(item.alg);
+        state.currentStep = 0;
+
+        // 设置 3D twisty-player 的公式与初始姿态
+        if (player) {
+            player.setAttribute('alg', item.alg);
+            player.setAttribute('experimental-setup-anchor', 'end');
+
+            // 根据分类配置标准贴纸模式
+            if (state.currentType === 'OLL') {
+                player.setAttribute('experimental-stickering', 'OLL');
+            } else if (state.currentType === 'PLL') {
+                player.setAttribute('experimental-stickering', 'PLL');
+            } else {
+                player.removeAttribute('experimental-stickering');
+            }
+
+            if (typeof player.jumpToStart === 'function') {
+                player.jumpToStart();
+            }
+        }
+
+        updateRibbon();
+        updateHUD();
+        updatePlayButtonUI();
+    }
+
+    function updateRibbon() {
+        var html = '';
+        state.activeTokens.forEach(function (token, idx) {
+            var cls = 'vc-alg-token';
+            if (idx === state.currentStep) cls += ' current';
+            else if (idx < state.currentStep) cls += ' passed';
+            html += '<span class="' + cls + '" data-idx="' + idx + '">' + token + '</span>';
+        });
+        ribbonEl.innerHTML = html;
+
+        var activeEl = ribbonEl.querySelector('.vc-alg-token.current');
+        if (activeEl) {
+            activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }
+
+    function updateHUD() {
+        if (state.currentStep < state.activeTokens.length) {
+            var move = state.activeTokens[state.currentStep];
+            hudMoveEl.textContent = move;
+            hudCnEl.textContent = CHINESE_MOVE_NAMES[move] || '进行中';
+        } else {
+            hudMoveEl.textContent = '✓';
+            hudCnEl.textContent = '已还原';
+        }
+    }
+
+    function updatePlayButtonUI() {
+        if (state.isPlaying) {
+            playText.textContent = '暂停';
+            playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            playBtn.classList.remove('primary');
+        } else {
+            playText.textContent = '播放';
+            playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            playBtn.classList.add('primary');
+        }
+    }
+
+    function populateSelect() {
+        var list = FORMULA_DATABASE[state.currentType];
+        var html = '';
+        list.forEach(function (item, idx) {
+            var label = state.isEnglish ? (item.id + ' - ' + item.en) : (item.id + ' - ' + item.cn);
+            html += '<option value="' + idx + '"' + (idx === state.currentCaseIndex ? ' selected' : '') + '>' + label + '</option>';
+        });
+        selectEl.innerHTML = html;
+    }
+
+    /* ── 6. 3D 控制器与播放步进 ──────────────────────────────────── */
+    function stepForward() {
+        if (!player || !player.controller) return;
+        var anim = player.controller.animationController;
+        if (anim.playing) anim.pause();
+        anim.play({ direction: 1, untilBoundary: 1 });
+        if (state.currentStep < state.activeTokens.length) {
+            state.currentStep++;
+            updateRibbon();
+            updateHUD();
+        }
+    }
+
+    function stepBackward() {
+        if (!player || !player.controller) return;
+        var anim = player.controller.animationController;
+        if (anim.playing) anim.pause();
+        anim.play({ direction: -1, untilBoundary: 1 });
+        if (state.currentStep > 0) {
+            state.currentStep--;
+            updateRibbon();
+            updateHUD();
+        }
+    }
+
+    function togglePlay() {
+        if (!player || !player.controller) return;
+        var anim = player.controller.animationController;
+        if (anim.playing) {
+            anim.pause();
+            state.isPlaying = false;
+            updatePlayButtonUI();
+        } else {
+            // 如果已在末尾，从头重新播放
+            if (state.currentStep >= state.activeTokens.length) {
+                player.jumpToStart();
+                state.currentStep = 0;
+                updateRibbon();
+                updateHUD();
+            }
+            anim.play();
+            state.isPlaying = true;
+            updatePlayButtonUI();
+        }
+    }
+
+    // 监听 formula ribbon 中点击单步直接跳转
+    ribbonEl.addEventListener('click', function (e) {
+        var tokenEl = e.target.closest('.vc-alg-token');
+        if (!tokenEl) return;
+        var idx = parseInt(tokenEl.getAttribute('data-idx'), 10);
+        if (isNaN(idx) || !player) return;
+
+        if (player.controller && player.controller.animationController) {
+            var anim = player.controller.animationController;
+            if (anim.playing) anim.pause();
+        }
+
+        player.jumpToStart();
+        if (idx > 0 && player.controller) {
+            for (var i = 0; i < idx; i++) {
+                player.controller.animationController.play({ direction: 1, untilBoundary: 1 });
+            }
+        }
+        state.currentStep = idx;
+        updateRibbon();
+        updateHUD();
+        sendGenuiLog('operation');
+    });
+
+    /* ── 7. 事件绑定与打点规范 ──────────────────────────────────── */
+    // Tabs 切换
+    document.getElementById('type-tabs').addEventListener('click', function (e) {
+        var btn = e.target.closest('.vc-tab-btn');
+        if (!btn) return;
+        if (player && player.controller) player.controller.animationController.pause();
+        state.isPlaying = false;
+
+        document.querySelectorAll('#type-tabs .vc-tab-btn').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.currentType = btn.getAttribute('data-type');
+        state.currentCaseIndex = 0;
+        populateSelect();
+        setupCurrentCase();
+        sendGenuiLog('operation');
+    });
+
+    // 下拉选择公式
+    selectEl.addEventListener('change', function () {
+        if (player && player.controller) player.controller.animationController.pause();
+        state.isPlaying = false;
+        state.currentCaseIndex = parseInt(selectEl.value, 10);
+        setupCurrentCase();
+        sendGenuiLog('operation');
+    });
+
+    // 中英文切换
+    document.getElementById('btn-lang').addEventListener('click', function () {
+        state.isEnglish = !state.isEnglish;
+        populateSelect();
+        sendGenuiLog('operation');
+    });
+
+    // 步进按钮
+    document.getElementById('btn-next').addEventListener('click', function () {
+        stepForward();
+        sendGenuiLog('operation');
+    });
+
+    document.getElementById('btn-prev').addEventListener('click', function () {
+        stepBackward();
+        sendGenuiLog('operation');
+    });
+
+    playBtn.addEventListener('click', function () {
+        togglePlay();
+        sendGenuiLog('operation');
+    });
+
+    // 表头复位
+    document.getElementById('btn-reset').addEventListener('click', function () {
+        if (player) {
+            if (player.controller) player.controller.animationController.pause();
+            player.cameraLatitude = 25;
+            player.cameraLongitude = 20;
+            player.jumpToStart();
+        }
+        state.isPlaying = false;
+        state.currentStep = 0;
+        updateRibbon();
+        updateHUD();
+        updatePlayButtonUI();
+        sendGenuiLog('operation');
+    });
+
+    // 气泡提示
+    var tipsBtn = document.getElementById('btn-info');
+    var tipsTooltip = document.getElementById('tips-tooltip');
+    tipsBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        tipsTooltip.classList.toggle('visible');
+    });
+    document.addEventListener('click', function () {
+        tipsTooltip.classList.remove('visible');
+    });
+
+    /* ── 8. 初始化与 TwistyPlayer 状态监听 ───────────────────────── */
+    function initPlayerTracking() {
+        if (!player) return;
+
+        // 订阅当前步数进度 (currentMoveInfo / patternIndex)
+        var moveInfo = player.experimentalModel && player.experimentalModel.currentMoveInfo;
+        if (moveInfo && typeof moveInfo.subscribe === 'function') {
+            moveInfo.subscribe(function (info) {
+                if (info && typeof info.patternIndex === 'number') {
+                    if (info.patternIndex !== state.currentStep) {
+                        state.currentStep = info.patternIndex;
+                        updateRibbon();
+                        updateHUD();
+                    }
+                }
+            });
+        }
+
+        // 订阅播放状态改变
+        var timeline = player.experimentalModel && player.experimentalModel.coarseTimelineInfo;
+        if (timeline && typeof timeline.subscribe === 'function') {
+            timeline.subscribe(function (info) {
+                if (info) {
+                    if (info.atEnd) {
+                        state.isPlaying = false;
+                        state.currentStep = state.activeTokens.length;
+                        updateRibbon();
+                        updateHUD();
+                        updatePlayButtonUI();
+                    } else if (typeof info.playing === 'boolean' && info.playing !== state.isPlaying) {
+                        state.isPlaying = info.playing;
+                        updatePlayButtonUI();
+                    }
+                }
+            });
+        }
+    }
+
+    populateSelect();
+    setupCurrentCase();
+
+    // 当 Web Components 自定义元素完全就绪后开启数据订阅
+    customElements.whenDefined('twisty-player').then(function () {
+        initPlayerTracking();
+    });
+
+})();
+</script>
+</body>
+</html>
