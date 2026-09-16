@@ -27,7 +27,7 @@ It features full 3D interactive cube playback, gesture rotation, step-by-step fo
 
 ---
 
-## ✨ Features
+## �?Features
 
 - 🧊 **Interactive 3D Visualizer**: Real-time 3D cube rendering powered by `cubing.js` (`twisty-player`), supporting step-by-step playback, speed control, and smooth 3D rotations.
 - 📖 **Complete CFOP Formula Library**: Pre-configured with essential CFOP stages (Cross, F2L, OLL, PLL) and multiple solution variations.
@@ -41,12 +41,12 @@ It features full 3D interactive cube playback, gesture rotation, step-by-step fo
 ```text
 .
 ├── .agents/
-│   └── skills/                  # AI Agent Skills for LLM-assisted workflows
-│       ├── genui-app-builder/   # Main router skill
-│       ├── genui-creator/       # Visual design & code specification skill
-│       └── genui-toolkit/       # CLI preview, check, and publish skill
+�?  └── skills/                  # AI Agent Skills for LLM-assisted workflows
+�?      ├── genui-app-builder/   # Main router skill
+�?      ├── genui-creator/       # Visual design & code specification skill
+�?      └── genui-toolkit/       # CLI preview, check, and publish skill
 ├── static/
-│   └── cubing-twisty.js         # Bundled 3D twisty-player library
+�?  └── cubing-twisty.js         # Bundled 3D twisty-player library
 ├── app.json                     # GenUI card configuration & metadata
 ├── index.html                   # Main interactive 3D CFOP trainer
 ├── logo.png                     # Card icon / logo
