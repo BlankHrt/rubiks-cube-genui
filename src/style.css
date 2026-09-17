@@ -1,0 +1,612 @@
+* {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f1117;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #F0F0F5;
+            overflow: hidden;
+        }
+
+        /* ── 1:1 响应式卡片 (百度搜索直达标准规范) ── */
+        .vc-component-wrapper {
+            width: 100%;
+            max-width: 460px;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        @supports not (aspect-ratio: 1 / 1) {
+            .vc-component-wrapper {
+                padding-top: 100%;
+                height: 0;
+            }
+        }
+
+        .vc-component-container {
+            position: absolute;
+            inset: 0;
+            background: #111319;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #232733;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ── 顶部表头 ── */
+                /* ── 沉浸放大把玩模式 (在 1:1 卡片内铺满整屏) ── */
+        .vc-component-container.immersive-mode .formula-panel,
+        .vc-component-container.immersive-mode .controls-section {
+            display: none !important;
+        }
+
+        .vc-component-container.immersive-mode .player-section {
+            flex: 1;
+            height: calc(100% - 36px);
+        }
+
+        .vc-component-container.immersive-mode .player-container {
+            height: 100%;
+        }
+
+        .vc-header {
+            height: 36px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            flex-shrink: 0;
+            z-index: 30;
+        }
+
+        .vc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vc-header-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #F0F0F5;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vc-header-badge {
+            font-size: 9.5px;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .vc-header-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .vc-header-btn {
+            background: transparent;
+            border: none;
+            color: #8c93a0;
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 11px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .vc-header-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ── 核心 3D 魔方主视口 (占据核心大面积) ── */
+        .player-section {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1b202c 0%, #111319 75%);
+        }
+
+        .player-container {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cube-player {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* 悬浮工具栏 (横向排列在顶部左右两角，绝不与公式重叠) */
+        .top-left-tools {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            display: flex;
+            gap: 6px;
+            z-index: 20;
+        }
+
+        .top-right-tools {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            z-index: 20;
+        }
+
+        .floating-tool-btn {
+            height: 26px;
+            padding: 0 9px;
+            background: rgba(26, 30, 40, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #F0F0F5;
+            border-radius: 13px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .floating-tool-btn:hover {
+            background: rgba(40, 45, 60, 0.95);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .floating-tool-btn:active {
+            transform: scale(0.93);
+        }
+
+        .floating-tool-btn.active {
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.45);
+        }
+
+        .floating-tool-btn.highlight {
+            color: #fff;
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            border-color: transparent;
+            box-shadow: 0 2px 8px rgba(254, 44, 85, 0.35);
+        }
+
+        /* ── 中间公式卡片 (对齐 practice.vue) ── */
+        .formula-panel {
+            padding: 0 10px 4px;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        .formula-area {
+            border-radius: 9px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 5px 10px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+        }
+
+        .formula-area:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .formula-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+
+        .case-name-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #F0F0F5;
+        }
+
+        .case-group-badge {
+            font-size: 9.5px;
+            padding: 1px 5px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #9499ad;
+            font-weight: 500;
+        }
+
+        .formula-toggle-hint {
+            font-size: 10px;
+            color: #6B6B85;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .formula-text {
+            font-family: ui-monospace, SFMono-Regular, Monaco, Consolas, monospace;
+            font-size: 13.5px;
+            line-height: 1.3;
+            font-weight: 600;
+            color: #4ade80;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px 5px;
+            align-items: center;
+        }
+
+        .formula-text.scramble {
+            color: #38bdf8;
+        }
+
+        .formula-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 3px;
+        }
+
+        .mode-badge {
+            font-size: 9px;
+            line-height: 1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 700;
+        }
+
+        .mode-badge.solution {
+            background: #4ade80;
+            color: #121212;
+        }
+
+        .mode-badge.scramble {
+            background: #38bdf8;
+            color: #121212;
+        }
+
+        .step-current-cn {
+            font-size: 10.5px;
+            color: #8c93a0;
+        }
+
+        /* ── 下方控制区 (紧凑现代) ── */
+        .controls-section {
+            background: #141720;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 10px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+
+        /* 分类切换药丸 (ControlSwitch) */
+        .control-switch {
+            display: flex;
+            gap: 4px;
+            padding: 2px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .switch-btn {
+            flex: 1;
+            height: 25px;
+            border: none;
+            background: transparent;
+            border-radius: 5px;
+            color: #8c93a0;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .switch-btn.active {
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(254, 44, 85, 0.35);
+            font-weight: 700;
+        }
+
+        /* 步骤 Tokens 缎带区 */
+        .formula-tokens-wrap {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 1px 0;
+        }
+
+        .formula-tokens-wrap::-webkit-scrollbar {
+            display: none;
+        }
+
+        .formula-tokens {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .move-token {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 22px;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            font-weight: 700;
+            font-family: ui-monospace, monospace;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .move-token.move-pending {
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .move-token.move-done {
+            color: rgba(255, 255, 255, 0.25);
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .move-token.move-current {
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            box-shadow: 0 2px 6px rgba(254, 44, 85, 0.45);
+            transform: scale(1.06);
+            border: none;
+        }
+
+        /* 细进度条 */
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 2.5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #FE2C55;
+            border-radius: 2px;
+            transition: width 0.18s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 10.5px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            min-width: 36px;
+            text-align: right;
+            font-family: ui-monospace, monospace;
+        }
+
+        /* 圆盘步进播放器 */
+        .playback-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 1px 0;
+        }
+
+        .pb-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .pb-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
+        .pb-btn:active {
+            transform: scale(0.9);
+        }
+
+        .pb-btn-play {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FE2C55, #E5244D);
+            border: none;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 3px 12px rgba(254, 44, 85, 0.4);
+        }
+
+        .pb-btn-play:active {
+            transform: scale(0.92);
+        }
+
+        .pb-btn-play.playing {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            box-shadow: 0 3px 12px rgba(96, 165, 250, 0.4);
+        }
+
+        /* ── 列表选题弹窗 (Sheet) ── */
+        .case-modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .case-modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .case-modal-sheet {
+            background: #181b24;
+            border-top: 1px solid #2d3345;
+            border-radius: 14px 14px 0 0;
+            max-height: 78%;
+            display: flex;
+            flex-direction: column;
+            padding: 10px 12px 14px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #F0F0F5;
+        }
+
+        .modal-close-btn {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #a0a0b8;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            overflow-y: auto;
+            max-height: 230px;
+            padding: 2px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .modal-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .modal-case-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 7px;
+            padding: 6px 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .modal-case-item.selected {
+            background: rgba(254, 44, 85, 0.15);
+            border-color: #FE2C55;
+            color: #FE2C55;
+        }
+
+        .modal-item-id {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 1px;
+        }
+
+        .modal-item-name {
+            font-size: 9.5px;
+            color: #8c93a0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }

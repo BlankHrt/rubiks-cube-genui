@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小工具 · 魔方公式速查</title>
+    <style>
+/* {{INJECT_CSS}} */
+    </style>
+    <!-- 引入内嵌的 3D twisty 引擎 -->
+    <script type="module">
+/* {{INJECT_TWISTY}} */
+    </script>
+</head>
+<body>
+<div class="vc-component-wrapper">
+    <div class="vc-component-container" id="vc-container">
+        <!-- 1. 表头 -->
+        <div class="vc-header">
+            <div class="vc-header-left">
+                <span class="vc-header-title">
+                    魔方公式速查
+                    <span class="vc-header-badge">3D交互</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 2. 3D 魔方核心主视口 (近景大画面呈现) -->
+        <div class="player-section">
+            <div class="player-container">
+                <!-- 左上角悬浮工具圆钮 (横排布局，不挡公式) -->
+                <div class="top-left-tools">
+                    <button class="floating-tool-btn" id="tool-view" title="复位视角">视角</button>
+                    <button class="floating-tool-btn" id="tool-mask" title="切换顶层遮罩">遮罩</button>
+                    <button class="floating-tool-btn" id="tool-lang" title="中英切换">中/EN</button>
+                </div>
+
+                <!-- 右上角悬浮工具圆钮 (横排布局，不挡公式) -->
+                <div class="top-right-tools">
+                    <button class="floating-tool-btn highlight" id="tool-next" title="下一个公式">切换</button>
+                    <button class="floating-tool-btn" id="tool-list" title="公式列表">列表</button>
+                    <button class="floating-tool-btn" id="tool-reset" title="重置状态">重置</button>
+                </div>
+
+                <!-- 3D Twisty Player (近景超清晰特写: camera-distance="3.6") -->
+                <twisty-player
+                    id="cube-player"
+                    class="cube-player"
+                    puzzle="3x3x3"
+                    background="none"
+                    control-panel="none"
+                    experimental-setup-anchor="end"
+                    hint-facelets="floating"
+                    camera-latitude="25"
+                    camera-longitude="20"
+                    camera-distance="5.2"
+                    tempo-scale="2.5"
+                ></twisty-player>
+            </div>
+
+
+        </div>
+
+        <!-- 3. 下方控制区 (对齐 ControlSwitch & PlaybackControl) -->
+        <div class="controls-section">
+            <!-- 分段分类切换 -->
+            <div class="control-switch" id="type-switch">
+                <button class="switch-btn" data-type="F2L">F2L (41)</button>
+                <button class="switch-btn active" data-type="OLL">OLL (57)</button>
+                <button class="switch-btn" data-type="PLL">PLL (21)</button>
+            </div>
+
+            <!-- 步骤 Tokens 缎带 -->
+            <div class="formula-tokens-wrap">
+                <div class="formula-tokens" id="formula-tokens"></div>
+            </div>
+
+            <!-- 细进度条 -->
+            <div class="progress-bar-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span class="progress-text" id="progress-text">0 / 0</span>
+            </div>
+
+            <!-- 圆盘步进播放器 (对齐 PlaybackControl.vue) -->
+            <div class="playback-controls">
+                <button class="pb-btn" id="pb-start" title="回到起点">⏮</button>
+                <button class="pb-btn" id="pb-prev" title="上一步">◀</button>
+                <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停">▶</button>
+                <button class="pb-btn" id="pb-next" title="下一步">▶</button>
+                <button class="pb-btn" id="pb-end" title="跳到结尾">⏭</button>
+            </div>
+        </div>
+
+        <!-- 4. 公式列表选择弹窗 (Sheet) -->
+        <div class="case-modal-overlay" id="case-modal">
+            <div class="case-modal-sheet">
+                <div class="modal-header">
+                    <span class="modal-title" id="modal-title">选择公式</span>
+                    <button class="modal-close-btn" id="btn-modal-close">✕</button>
+                </div>
+                <div class="modal-grid" id="modal-grid"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+/* {{INJECT_DATA}} */
+
+/* {{INJECT_APP}} */
+
+})();
+</script>
+</body>
+</html>

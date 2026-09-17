@@ -1,7 +1,7 @@
 {
   "name": "魔方公式速查",
   "brief": "CFOP公式3D速查",
-  "description": "三阶魔方CFOP核心公式速查与3D分步动态教学，支持中英文双语切换与手势旋转。",
+  "description": "三阶魔方CFOP核心公式速查与3D分步动态教学，支持中英文双语切换",
   "projectPath": "./index.html",
   "logo": "./logo.png"
 }

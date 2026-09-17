@@ -1,0 +1,19 @@
+{
+  "name": "genui-mofang-formula",
+  "version": "1.0.0",
+  "description": "CFOP 3D Rubik's Cube Formula Lookup Card for Baidu GenUI",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "check": "npx @cosui/genui-toolkit check ./index.html",
+    "preview": "npx @cosui/genui-toolkit preview"
+  },
+  "keywords": [
+    "genui",
+    "rubiks-cube",
+    "cfop",
+    "3d"
+  ],
+  "author": "icubing",
+  "license": "MIT"
+}

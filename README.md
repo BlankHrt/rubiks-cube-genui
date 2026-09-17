@@ -43,20 +43,53 @@ It features full 3D interactive cube playback, gesture rotation, complete CFOP f
 
 ## 📁 Project Structure
 
+The project adopts a **modular development source + single-file automated bundling** architecture, ensuring clean maintainability and 100% compliance with Baidu GenUI sandbox rules:
+
 ```text
 rubiks-cube-genui/
-├── .agents/                    # AI Agent Skills (GenUI workflows for AI assistants)
-│   └── skills/
-│       ├── genui-app-builder/  # Unified router & app generator
-│       ├── genui-creator/      # GenUI guidelines, sandbox rules & design specs
-│       └── genui-toolkit/      # CLI preview, check, login & publish workflows
-├── app.json                    # GenUI configuration (metadata, entry, viewport)
-├── index.html                  # Self-contained 3D cube interactive application
-├── logo.png                    # 256x256 HD app logo (rounded cube icon)
-├── logo.jpg                    # Source image for logo
+├── src/                        # Modular source code (edit during development)
+│   ├── index.template.html     # HTML card template shell
+│   ├── style.css               # Card stylesheet (responsive layout & controls)
+│   ├── app.js                  # Interactive logic (algorithms, 3D player, masks, mnemonics)
+│   ├── cfop-data.js            # Complete CFOP 119 database & mask settings
+│   └── lib/
+│       └── twisty-player.js    # Offline-bundled cubing.js 3D rendering engine
+├── build.js                    # Automated single-file bundler (supports --watch)
+├── package.json                # Project scripts and dependencies
+├── index.html                  # Built self-contained single-file bundle (production artifact)
+├── app.json                    # GenUI metadata & config (viewport, tags, keywords)
+├── logo.png                    # 256x256 HD app logo
+├── logo.jpg                    # Logo source artwork
 ├── LICENSE                     # MIT License
 ├── README.md                   # English documentation
 └── README_ZH.md                # Chinese documentation
+```
+
+---
+
+## 🛠️ Common Development Commands
+
+| Command | Full Script | Description |
+| :--- | :--- | :--- |
+| **Build** | `npm run build` | Bundles `src/` modules into the single-file `index.html` |
+| **Watch & Dev**| `npm run watch` | Watches `src/` directory and rebuilds automatically on file save |
+| **Security Check** | `npm run check` | Runs GenUI Toolkit security and compliance audit on `index.html` |
+| **Local Preview** | `npm run preview` | Starts the GenUI local sandbox preview server (default: port 9373) |
+
+### Usage Examples
+
+```bash
+# 1. Start live development with watch mode
+npm run watch
+
+# 2. Build single-file production index.html
+npm run build
+
+# 3. Perform security and compliance validation
+npm run check
+
+# 4. Preview interactive card in local browser
+npm run preview
 ```
 
 ---
@@ -67,22 +100,19 @@ rubiks-cube-genui/
 
 Make sure you have [Node.js](https://nodejs.org/) (>= 18) installed.
 
-### 2. Preview Locally
+### 2. Development & Building
 
-Run the GenUI preview server via the official toolkit:
-
-```bash
-npx @cosui/genui-toolkit preview
-```
-
-Open your browser at `http://localhost:9373` (or the port shown in terminal) to interact with the 3D card.
+1. Make edits to source files under `src/` (`app.js`, `style.css`, `cfop-data.js`, etc.).
+2. Run `npm run build` to compile the single-file `index.html`.
+3. Run `npm run preview` to launch the local sandbox and test in the browser.
 
 ### 3. Static Security & Compliance Check
 
 Before publishing to Baidu GenUI, verify that your code adheres to sandbox and security rules:
 
 ```bash
-npx @cosui/genui-toolkit check index.html
+npm run check
+# Or: npx @cosui/genui-toolkit check ./index.html
 ```
 
 You should see:

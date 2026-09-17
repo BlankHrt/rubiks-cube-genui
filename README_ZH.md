@@ -43,20 +43,53 @@
 
 ## 📁 目录结构
 
+项目采用 **模块化源码开发 + 一键打包单文件** 的架构设计，兼顾开发可维护性与百度平台单文件沙箱合规：
+
 ```text
 rubiks-cube-genui/
-├── .agents/                    # AI 智能体技能包 (GenUI 官方标准工作流)
-│   └── skills/
-│       ├── genui-app-builder/  # 统一调度与微应用生成
-│       ├── genui-creator/      # GenUI 规范、沙箱约束与设计指引
-│       └── genui-toolkit/      # CLI 预览、检查、登录与发布指令
-├── app.json                    # GenUI 应用配置文件 (元数据、视口与关键词)
-├── index.html                  # 单文件自包含 3D 魔方卡片核心源码
-├── logo.png                    # 256x256 高清应用图标 (符合平台规范)
+├── src/                        # 模块化源码（开发阶段编辑）
+│   ├── index.template.html     # 卡片 HTML 骨架模版
+│   ├── style.css               # 卡片样式表（响应式与控件美化）
+│   ├── app.js                  # 交互逻辑（公式选择、3D播放、遮罩渲染、土豆中英口诀）
+│   ├── cfop-data.js            # 完整 CFOP 119 公式数据库与遮罩配置
+│   └── lib/
+│       └── twisty-player.js    # 离线打包的 cubing.js 3D 魔方渲染引擎
+├── build.js                    # 单文件自动化合并构建脚本（支持增量与监听）
+├── package.json                # 项目配置与常用快捷脚本
+├── index.html                  # 构建生成的自包含单文件（上线发布产物）
+├── app.json                    # GenUI 规范元数据配置文件（卡片尺寸、标签、搜索关键词）
+├── logo.png                    # 256x256 高清应用图标（平台展示用）
 ├── logo.jpg                    # 图标原图素材
 ├── LICENSE                     # MIT 开源许可证
 ├── README.md                   # 英文说明文档
 └── README_ZH.md                # 中文说明文档
+```
+
+---
+
+## 🛠️ 常用开发命令
+
+| 命令 | 完整指令 | 说明 |
+| :--- | :--- | :--- |
+| **构建产物** | `npm run build` | 将 `src/` 中的模块合并打包生成单一内联文件 `index.html` |
+| **监听开发** | `npm run watch` | 监听 `src/` 目录变动，保存源码即自动重新构建 |
+| **安全检查** | `npm run check` | 调用 GenUI Toolkit 对 `index.html` 执行严格安全与合规检测 |
+| **本地预览** | `npm run preview` | 启动 GenUI 本地预览沙箱服务器（默认端口 9373） |
+
+### 命令使用示例
+
+```bash
+# 1. 启动监听开发（边改代码边自动编译）
+npm run watch
+
+# 2. 手动单次打包构建
+npm run build
+
+# 3. 提交前进行合规与安全检测（必须显示"代码包已通过安全检测"）
+npm run check
+
+# 4. 本地启动沙箱预览卡片效果
+npm run preview
 ```
 
 ---
@@ -67,22 +100,19 @@ rubiks-cube-genui/
 
 确保本地已安装 [Node.js](https://nodejs.org/) (推荐 >= 18)。
 
-### 2. 本地预览开发
+### 2. 开发与构建
 
-通过官方 GenUI 工具包启动本地预览服务器：
-
-```bash
-npx @cosui/genui-toolkit preview
-```
-
-终端会输出本地预览地址（默认 `http://localhost:9373`），在浏览器中打开即可实时体验 3D 卡片与公式切换。
+1. 修改 `src/` 目录下的代码（如 `app.js`、`style.css`、`cfop-data.js`）。
+2. 执行 `npm run build` 编译出符合规范的 `index.html`。
+3. 执行 `npm run preview` 打开浏览器进行交互验证。
 
 ### 3. 静态安全与合规检测
 
 在提交到百度 GenUI 平台审核前，必须运行静态安全检查：
 
 ```bash
-npx @cosui/genui-toolkit check index.html
+npm run check
+# 或: npx @cosui/genui-toolkit check ./index.html
 ```
 
 校验通过将显示：
