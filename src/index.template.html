@@ -15,34 +15,36 @@
 <body>
 <div class="vc-component-wrapper">
     <div class="vc-component-container" id="vc-container">
-        <!-- 1. 表头 -->
-        <div class="vc-header">
-            <div class="vc-header-left">
-                <span class="vc-header-title">
-                    魔方公式速查
-                    <span class="vc-header-badge">3D交互</span>
+        <!-- 1. 表头 (按官方规范 45px，格式为: 小工具 · 工具名称 + 规则说明 + 右侧重置) -->
+        <div class="vc-component-header">
+            <span class="vc-component-header-title">小工具 · 魔方公式速查</span>
+            <span
+                class="vc-component-tips"
+                id="vc-component-tips"
+                tabindex="0"
+                role="button"
+                aria-label="功能说明"
+            >
+                <i class="cos-icon cos-icon-info-source" aria-hidden="true"></i>
+                <span class="vc-component-tips-tooltip" id="vc-component-tips-tooltip">
+                    三阶魔方 CFOP 核心公式 3D 动态速查。支持手势拖拽 3D 旋转视角、单步步进与连续动画演示、公式切换与顶层遮罩。
                 </span>
-            </div>
+            </span>
+            <span
+                class="vc-component-control-btn"
+                id="vc-component-reset"
+                title="重置"
+                tabindex="0"
+                role="button"
+                aria-label="重置"
+            >
+                <i class="cos-icon cos-icon-refresh" aria-hidden="true"></i>
+            </span>
         </div>
 
-        <!-- 2. 3D 魔方核心主视口 (近景大画面呈现) -->
+        <!-- 2. 3D 魔方核心主视口 (纯净画布，无任何散落按钮，占比 > 50%) -->
         <div class="player-section">
             <div class="player-container">
-                <!-- 左上角悬浮工具圆钮 (横排布局，不挡公式) -->
-                <div class="top-left-tools">
-                    <button class="floating-tool-btn" id="tool-view" title="复位视角">视角</button>
-                    <button class="floating-tool-btn" id="tool-mask" title="切换顶层遮罩">遮罩</button>
-                    <button class="floating-tool-btn" id="tool-lang" title="中英切换">中/EN</button>
-                </div>
-
-                <!-- 右上角悬浮工具圆钮 (横排布局，不挡公式) -->
-                <div class="top-right-tools">
-                    <button class="floating-tool-btn highlight" id="tool-next" title="下一个公式">切换</button>
-                    <button class="floating-tool-btn" id="tool-list" title="公式列表">列表</button>
-                    <button class="floating-tool-btn" id="tool-reset" title="重置状态">重置</button>
-                </div>
-
-                <!-- 3D Twisty Player (近景超清晰特写: camera-distance="3.6") -->
                 <twisty-player
                     id="cube-player"
                     class="cube-player"
@@ -57,25 +59,34 @@
                     tempo-scale="2.5"
                 ></twisty-player>
             </div>
-
-
         </div>
 
-        <!-- 3. 下方控制区 (对齐 ControlSwitch & PlaybackControl) -->
+        <!-- 3. 下方控制区 (全部控件集中在此，字号统一 >= 14px) -->
         <div class="controls-section">
-            <!-- 分段分类切换 -->
-            <div class="control-switch" id="type-switch">
-                <button class="switch-btn" data-type="F2L">F2L (41)</button>
-                <button class="switch-btn active" data-type="OLL">OLL (57)</button>
-                <button class="switch-btn" data-type="PLL">PLL (21)</button>
+            <!-- 第 1 行：分类 Tab 切换 + 当前公式选择器与切题按钮 -->
+            <div class="case-nav-row">
+                <div class="control-switch" id="type-switch">
+                    <button class="switch-btn active" data-type="F2L">F2L</button>
+                    <button class="switch-btn" data-type="OLL">OLL</button>
+                    <button class="switch-btn" data-type="PLL">PLL</button>
+                </div>
+                <div class="case-selector-group">
+                    <button class="case-nav-btn" id="btn-case-prev" title="上一个公式" aria-label="上一个公式">‹</button>
+                    <button class="case-selector-btn" id="btn-case-select" title="打开公式列表" aria-label="选择公式">
+                        <span class="case-badge" id="case-badge-id">F2L-01</span>
+                        <span class="case-name" id="case-badge-name">简单标态</span>
+                        <span class="case-dropdown-arrow">▾</span>
+                    </button>
+                    <button class="case-nav-btn" id="btn-case-next" title="下一个公式" aria-label="下一个公式">›</button>
+                </div>
             </div>
 
-            <!-- 步骤 Tokens 缎带 -->
+            <!-- 第 2 行：公式步数 Tokens 缎带 (可点击跳转单步) -->
             <div class="formula-tokens-wrap">
                 <div class="formula-tokens" id="formula-tokens"></div>
             </div>
 
-            <!-- 细进度条 -->
+            <!-- 第 3 行：细进度条 -->
             <div class="progress-bar-container">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
@@ -83,27 +94,36 @@
                 <span class="progress-text" id="progress-text">0 / 0</span>
             </div>
 
-            <!-- 圆盘步进播放器 (对齐 PlaybackControl.vue) -->
-            <div class="playback-controls">
-                <button class="pb-btn" id="pb-start" title="回到起点">⏮</button>
-                <button class="pb-btn" id="pb-prev" title="上一步">◀</button>
-                <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停">▶</button>
-                <button class="pb-btn" id="pb-next" title="下一步">▶</button>
-                <button class="pb-btn" id="pb-end" title="跳到结尾">⏭</button>
+            <!-- 第 4 行：辅助工具栏与播放控制器 -->
+            <div class="bottom-action-row">
+                <!-- 辅助工具 (遮罩、视角、语言) -->
+                <div class="aux-tools-group">
+                    <button class="aux-btn active" id="tool-mask" title="切换顶层遮罩">遮罩</button>
+                    <button class="aux-btn" id="tool-view" title="复位视角">视角</button>
+                    <button class="aux-btn" id="tool-lang" title="中英切换">中/EN</button>
+                </div>
+
+                <!-- 步进与播放器 -->
+                <div class="playback-controls">
+                    <button class="pb-btn" id="pb-start" title="回到起点" aria-label="回到起点">⏮</button>
+                    <button class="pb-btn" id="pb-prev" title="上一步" aria-label="上一步">◀</button>
+                    <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停" aria-label="播放或暂停">▶</button>
+                    <button class="pb-btn" id="pb-next" title="下一步" aria-label="下一步">▶</button>
+                    <button class="pb-btn" id="pb-end" title="跳到结尾" aria-label="跳到结尾">⏭</button>
+                </div>
             </div>
         </div>
 
-        <!-- 4. 公式列表选择弹窗 (Sheet) -->
+        <!-- 4. 公式列表选择抽屉 (Modal Sheet) -->
         <div class="case-modal-overlay" id="case-modal">
             <div class="case-modal-sheet">
                 <div class="modal-header">
-                    <span class="modal-title" id="modal-title">选择公式</span>
-                    <button class="modal-close-btn" id="btn-modal-close">✕</button>
+                    <span class="modal-title" id="modal-title">选择公式 (OLL)</span>
+                    <button class="modal-close-btn" id="btn-modal-close" aria-label="关闭">✕</button>
                 </div>
                 <div class="modal-grid" id="modal-grid"></div>
             </div>
         </div>
-
     </div>
 </div>
 

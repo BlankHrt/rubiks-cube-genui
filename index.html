@@ -6,617 +6,671 @@
     <title>小工具 · 魔方公式速查</title>
     <style>
 * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #0f1117;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            touch-action: manipulation;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            color: #F0F0F5;
-            overflow: hidden;
-        }
-
-        /* ── 1:1 响应式卡片 (百度搜索直达标准规范) ── */
-        .vc-component-wrapper {
-            width: 100%;
-            max-width: 460px;
-            aspect-ratio: 1 / 1;
-            position: relative;
-            margin: 0 auto;
-        }
-
-        @supports not (aspect-ratio: 1 / 1) {
-            .vc-component-wrapper {
-                padding-top: 100%;
-                height: 0;
-            }
-        }
-
-        .vc-component-container {
-            position: absolute;
-            inset: 0;
-            background: #111319;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 1px solid #232733;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        /* ── 顶部表头 ── */
-                /* ── 沉浸放大把玩模式 (在 1:1 卡片内铺满整屏) ── */
-        .vc-component-container.immersive-mode .formula-panel,
-        .vc-component-container.immersive-mode .controls-section {
-            display: none !important;
-        }
-
-        .vc-component-container.immersive-mode .player-section {
-            flex: 1;
-            height: calc(100% - 36px);
-        }
-
-        .vc-component-container.immersive-mode .player-container {
-            height: 100%;
-        }
-
-        .vc-header {
-            height: 36px;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            background: rgba(255, 255, 255, 0.02);
-            flex-shrink: 0;
-            z-index: 30;
-        }
-
-        .vc-header-left {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .vc-header-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #F0F0F5;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .vc-header-badge {
-            font-size: 9.5px;
-            padding: 1px 5px;
-            border-radius: 4px;
-            background: rgba(56, 189, 248, 0.15);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-weight: 600;
-        }
-
-        .vc-header-right {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .vc-header-btn {
-            background: transparent;
-            border: none;
-            color: #8c93a0;
-            cursor: pointer;
-            padding: 4px 6px;
-            font-size: 11px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            transition: all 0.2s ease;
-        }
-
-        .vc-header-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        /* ── 核心 3D 魔方主视口 (占据核心大面积) ── */
-        .player-section {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1b202c 0%, #111319 75%);
-        }
-
-        .player-container {
-            flex: 1;
-            min-height: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .cube-player {
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        /* 悬浮工具栏 (横向排列在顶部左右两角，绝不与公式重叠) */
-        .top-left-tools {
-            position: absolute;
-            top: 6px;
-            left: 8px;
-            display: flex;
-            gap: 6px;
-            z-index: 20;
-        }
-
-        .top-right-tools {
-            position: absolute;
-            top: 6px;
-            right: 8px;
-            display: flex;
-            gap: 6px;
-            z-index: 20;
-        }
-
-        .floating-tool-btn {
-            height: 26px;
-            padding: 0 9px;
-            background: rgba(26, 30, 40, 0.85);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: #F0F0F5;
-            border-radius: 13px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            transition: all 0.2s ease;
-        }
-
-        .floating-tool-btn:hover {
-            background: rgba(40, 45, 60, 0.95);
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .floating-tool-btn:active {
-            transform: scale(0.93);
-        }
-
-        .floating-tool-btn.active {
-            background: rgba(56, 189, 248, 0.2);
-            color: #38bdf8;
-            border-color: rgba(56, 189, 248, 0.45);
-        }
-
-        .floating-tool-btn.highlight {
-            color: #fff;
-            background: linear-gradient(135deg, #FE2C55, #E5244D);
-            border-color: transparent;
-            box-shadow: 0 2px 8px rgba(254, 44, 85, 0.35);
-        }
-
-        /* ── 中间公式卡片 (对齐 practice.vue) ── */
-        .formula-panel {
-            padding: 0 10px 4px;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-
-        .formula-area {
-            border-radius: 9px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 5px 10px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            backdrop-filter: blur(6px);
-        }
-
-        .formula-area:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.16);
-        }
-
-        .formula-card-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2px;
-        }
-
-        .case-name-info {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #F0F0F5;
-        }
-
-        .case-group-badge {
-            font-size: 9.5px;
-            padding: 1px 5px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.08);
-            color: #9499ad;
-            font-weight: 500;
-        }
-
-        .formula-toggle-hint {
-            font-size: 10px;
-            color: #6B6B85;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .formula-text {
-            font-family: ui-monospace, SFMono-Regular, Monaco, Consolas, monospace;
-            font-size: 13.5px;
-            line-height: 1.3;
-            font-weight: 600;
-            color: #4ade80;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px 5px;
-            align-items: center;
-        }
-
-        .formula-text.scramble {
-            color: #38bdf8;
-        }
-
-        .formula-card-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 3px;
-        }
-
-        .mode-badge {
-            font-size: 9px;
-            line-height: 1;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-weight: 700;
-        }
-
-        .mode-badge.solution {
-            background: #4ade80;
-            color: #121212;
-        }
-
-        .mode-badge.scramble {
-            background: #38bdf8;
-            color: #121212;
-        }
-
-        .step-current-cn {
-            font-size: 10.5px;
-            color: #8c93a0;
-        }
-
-        /* ── 下方控制区 (紧凑现代) ── */
-        .controls-section {
-            background: #141720;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 6px 10px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex-shrink: 0;
-            z-index: 20;
-        }
-
-        /* 分类切换药丸 (ControlSwitch) */
-        .control-switch {
-            display: flex;
-            gap: 4px;
-            padding: 2px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 7px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .switch-btn {
-            flex: 1;
-            height: 25px;
-            border: none;
-            background: transparent;
-            border-radius: 5px;
-            color: #8c93a0;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .switch-btn.active {
-            background: linear-gradient(135deg, #FE2C55, #E5244D);
-            color: #fff;
-            box-shadow: 0 2px 8px rgba(254, 44, 85, 0.35);
-            font-weight: 700;
-        }
-
-        /* 步骤 Tokens 缎带区 */
-        .formula-tokens-wrap {
-            display: flex;
-            align-items: center;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding: 1px 0;
-        }
-
-        .formula-tokens-wrap::-webkit-scrollbar {
-            display: none;
-        }
-
-        .formula-tokens {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .move-token {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 24px;
-            height: 22px;
-            padding: 0 4px;
-            border-radius: 4px;
-            font-size: 11.5px;
-            font-weight: 700;
-            font-family: ui-monospace, monospace;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            flex-shrink: 0;
-        }
-
-        .move-token.move-pending {
-            color: rgba(255, 255, 255, 0.7);
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .move-token.move-done {
-            color: rgba(255, 255, 255, 0.25);
-            background: transparent;
-            border: 1px solid transparent;
-        }
-
-        .move-token.move-current {
-            color: #FFFFFF;
-            background: linear-gradient(135deg, #FE2C55, #E5244D);
-            box-shadow: 0 2px 6px rgba(254, 44, 85, 0.45);
-            transform: scale(1.06);
-            border: none;
-        }
-
-        /* 细进度条 */
-        .progress-bar-container {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 2.5px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #FE2C55;
-            border-radius: 2px;
-            transition: width 0.18s ease;
-            width: 0%;
-        }
-
-        .progress-text {
-            font-size: 10.5px;
-            color: rgba(255, 255, 255, 0.4);
-            font-weight: 600;
-            min-width: 36px;
-            text-align: right;
-            font-family: ui-monospace, monospace;
-        }
-
-        /* 圆盘步进播放器 */
-        .playback-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            padding: 1px 0;
-        }
-
-        .pb-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s ease;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .pb-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-        }
-
-        .pb-btn:active {
-            transform: scale(0.9);
-        }
-
-        .pb-btn-play {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FE2C55, #E5244D);
-            border: none;
-            color: white;
-            font-size: 16px;
-            box-shadow: 0 3px 12px rgba(254, 44, 85, 0.4);
-        }
-
-        .pb-btn-play:active {
-            transform: scale(0.92);
-        }
-
-        .pb-btn-play.playing {
-            background: linear-gradient(135deg, #60a5fa, #3b82f6);
-            box-shadow: 0 3px 12px rgba(96, 165, 250, 0.4);
-        }
-
-        /* ── 列表选题弹窗 (Sheet) ── */
-        .case-modal-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            justify-content: flex-end;
-            opacity: 0;
-            transition: opacity 0.25s ease;
-        }
-
-        .case-modal-overlay.open {
-            display: flex;
-            opacity: 1;
-        }
-
-        .case-modal-sheet {
-            background: #181b24;
-            border-top: 1px solid #2d3345;
-            border-radius: 14px 14px 0 0;
-            max-height: 78%;
-            display: flex;
-            flex-direction: column;
-            padding: 10px 12px 14px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-            animation: slideUp 0.25s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .modal-title {
-            font-size: 13.5px;
-            font-weight: 700;
-            color: #F0F0F5;
-        }
-
-        .modal-close-btn {
-            background: rgba(255,255,255,0.08);
-            border: none;
-            color: #a0a0b8;
-            font-size: 14px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            overflow-y: auto;
-            max-height: 230px;
-            padding: 2px;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .modal-grid::-webkit-scrollbar {
-            display: none;
-        }
-
-        .modal-case-item {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 7px;
-            padding: 6px 4px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.15s ease;
-        }
-
-        .modal-case-item.selected {
-            background: rgba(254, 44, 85, 0.15);
-            border-color: #FE2C55;
-            color: #FE2C55;
-        }
-
-        .modal-item-id {
-            font-size: 11px;
-            font-weight: 700;
-            margin-bottom: 1px;
-        }
-
-        .modal-item-name {
-            font-size: 9.5px;
-            color: #8c93a0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0f1117;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    touch-action: manipulation;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #F0F0F5;
+    overflow: hidden;
+}
+
+/* ── 官方 Cosmic Icon 字体声明 (对齐 layout.html) ── */
+.cos-icon {
+    font-family: "cos-icon" !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.cos-icon-info-source::before {
+    content: "\e693";
+}
+
+.cos-icon-refresh::before {
+    content: "\e779";
+}
+
+/* ── 1:1 响应式卡片 (百度搜索直达官方标准规范) ── */
+.vc-component-wrapper {
+    padding-top: 100%;
+    height: 0;
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+@supports (aspect-ratio: 1 / 1) {
+    .vc-component-wrapper {
+        padding-top: 0;
+        height: 100%;
+        max-height: 480px;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+.vc-component-container {
+    position: absolute;
+    inset: 0;
+    background: var(--cos-vcard-color-bg, #111319);
+    border-radius: var(--cos-rounded-sm, 12px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    user-select: none;
+    overscroll-behavior: none;
+    overflow: hidden;
+    border: 1px solid var(--cos-color-border-minor, #232733);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.vc-component-container * {
+    box-sizing: border-box;
+}
+
+/* ── 1. 表头框架 (标准 45px 高，严格遵循官方小工具开发者指南) ── */
+.vc-component-header {
+    height: 45px;
+    padding: 15px 15px 12px;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--cos-color-text-minor, #a4abb8);
+    font-weight: 500;
+    border-radius: var(--cos-rounded-sm, 12px) var(--cos-rounded-sm, 12px) 0 0;
+    border-bottom: 0.5px solid var(--cos-color-border-minor, rgba(255, 255, 255, 0.08));
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    z-index: 30;
+}
+
+.vc-component-header-title {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cos-color-text, #F0F0F5);
+}
+
+/* 规则说明 icon 与提示气泡 */
+.vc-component-tips {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: 5px;
+    font-size: 15px;
+    color: var(--cos-color-text-slim, #757c8d);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.vc-component-tips::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+}
+
+.vc-component-tips-tooltip {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 50%;
+    transform: translate(-50%, -4px);
+    background: var(--cos-color-bg-bubble, #222634);
+    color: var(--cos-color-text-inverse, #ffffff);
+    min-width: 180px;
+    text-align: left;
+    border-radius: var(--cos-rounded-md, 8px);
+    font-size: 14px;
+    line-height: 20px;
+    white-space: normal;
+    word-break: break-word;
+    max-width: var(--vc-tooltip-max-width, 320px);
+    width: max-content;
+    padding: 8px 12px;
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vc-component-tips-tooltip::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(calc(-50% + var(--vc-tooltip-arrow-shift, 0px)));
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid var(--cos-color-bg-bubble, #222634);
+}
+
+.vc-component-tips-tooltip.visible {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* 表头右侧重置按钮 (计算演示类必选) */
+.vc-component-control-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    color: var(--cos-color-text, #F0F0F5);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    font-size: 17px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: opacity 0.15s ease;
+}
+
+.vc-component-control-btn:active {
+    opacity: 0.4;
+}
+
+.vc-component-control-btn .cos-icon-refresh {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+}
+
+.vc-component-icon-rotating {
+    animation: vc-component-rotate 600ms ease;
+}
+
+@keyframes vc-component-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── 2. 画布区 (占比 >= 50%，无散落按钮，纯净沉浸) ── */
+.player-section {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1b202c 0%, #111319 75%);
+}
+
+.player-container {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.cube-player {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* ── 3. 操作区 (集中控件，字号统一 >= 14px) ── */
+.controls-section {
+    background: #141720;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+/* 第 1 行：分类 Tab 与公式选择器 */
+.case-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.control-switch {
+    display: flex;
+    gap: 3px;
+    padding: 2px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.switch-btn {
+    height: 28px;
+    padding: 0 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: #9da4b4;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.switch-btn.active {
+    background: linear-gradient(135deg, #FE2C55, #E5244D);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(254, 44, 85, 0.35);
+    font-weight: 700;
+}
+
+.case-selector-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.case-nav-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #F0F0F5;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.case-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.case-nav-btn:active {
+    transform: scale(0.92);
+}
+
+.case-selector-btn {
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.case-selector-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.case-selector-btn:active {
+    transform: scale(0.96);
+}
+
+.case-badge {
+    font-size: 14px;
+    font-weight: 700;
+    color: #38bdf8;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.case-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #F0F0F5;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.case-dropdown-arrow {
+    font-size: 14px;
+    color: #8c93a0;
+}
+
+/* 第 2 行：公式步数 Tokens 缎带 */
+.formula-tokens-wrap {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 1px 0;
+}
+
+.formula-tokens-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+.formula-tokens {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.move-token {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 26px;
+    padding: 0 6px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.move-token.move-pending {
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.move-token.move-done {
+    color: rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.move-token.move-current {
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #FE2C55, #E5244D);
+    box-shadow: 0 2px 8px rgba(254, 44, 85, 0.45);
+    transform: scale(1.05);
+    border: none;
+}
+
+/* 第 3 行：细进度条与进度文字 */
+.progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #FE2C55;
+    border-radius: 2px;
+    transition: width 0.18s ease;
+    width: 0%;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 600;
+    min-width: 42px;
+    text-align: right;
+    font-family: ui-monospace, monospace;
+}
+
+/* 第 4 行：辅助工具栏与播放控制器 */
+.bottom-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.aux-tools-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.aux-btn {
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #B4B9C8;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.aux-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.aux-btn:active {
+    transform: scale(0.94);
+}
+
+.aux-btn.active {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+    border-color: rgba(56, 189, 248, 0.4);
+}
+
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pb-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.pb-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+}
+
+.pb-btn:active {
+    transform: scale(0.9);
+}
+
+.pb-btn-play {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FE2C55, #E5244D);
+    border: none;
+    color: white;
+    font-size: 16px;
+    box-shadow: 0 3px 12px rgba(254, 44, 85, 0.4);
+}
+
+.pb-btn-play:active {
+    transform: scale(0.92);
+}
+
+.pb-btn-play.playing {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    box-shadow: 0 3px 12px rgba(56, 189, 248, 0.4);
+}
+
+/* ── 4. 公式列表选择抽屉 (Modal Sheet) ── */
+.case-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.case-modal-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+.case-modal-sheet {
+    background: #181b24;
+    border-top: 1px solid #2d3345;
+    border-radius: 14px 14px 0 0;
+    max-height: 75%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 14px 16px;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #F0F0F5;
+}
+
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #a0a0b8;
+    font-size: 15px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    overflow-y: auto;
+    max-height: 220px;
+    padding: 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.modal-case-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+}
+
+.modal-case-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.modal-case-item.selected {
+    background: rgba(254, 44, 85, 0.15);
+    border-color: #FE2C55;
+    color: #FE2C55;
+}
+
+.modal-item-id {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.modal-item-name {
+    font-size: 14px;
+    color: #8c93a0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
     </style>
     <!-- 引入内嵌的 3D twisty 引擎 -->
@@ -10469,34 +10523,36 @@ twisty-alg-viewer {
 <body>
 <div class="vc-component-wrapper">
     <div class="vc-component-container" id="vc-container">
-        <!-- 1. 表头 -->
-        <div class="vc-header">
-            <div class="vc-header-left">
-                <span class="vc-header-title">
-                    魔方公式速查
-                    <span class="vc-header-badge">3D交互</span>
+        <!-- 1. 表头 (按官方规范 45px，格式为: 小工具 · 工具名称 + 规则说明 + 右侧重置) -->
+        <div class="vc-component-header">
+            <span class="vc-component-header-title">小工具 · 魔方公式速查</span>
+            <span
+                class="vc-component-tips"
+                id="vc-component-tips"
+                tabindex="0"
+                role="button"
+                aria-label="功能说明"
+            >
+                <i class="cos-icon cos-icon-info-source" aria-hidden="true"></i>
+                <span class="vc-component-tips-tooltip" id="vc-component-tips-tooltip">
+                    三阶魔方 CFOP 核心公式 3D 动态速查。支持手势拖拽 3D 旋转视角、单步步进与连续动画演示、公式切换与顶层遮罩。
                 </span>
-            </div>
+            </span>
+            <span
+                class="vc-component-control-btn"
+                id="vc-component-reset"
+                title="重置"
+                tabindex="0"
+                role="button"
+                aria-label="重置"
+            >
+                <i class="cos-icon cos-icon-refresh" aria-hidden="true"></i>
+            </span>
         </div>
 
-        <!-- 2. 3D 魔方核心主视口 (近景大画面呈现) -->
+        <!-- 2. 3D 魔方核心主视口 (纯净画布，无任何散落按钮，占比 > 50%) -->
         <div class="player-section">
             <div class="player-container">
-                <!-- 左上角悬浮工具圆钮 (横排布局，不挡公式) -->
-                <div class="top-left-tools">
-                    <button class="floating-tool-btn" id="tool-view" title="复位视角">视角</button>
-                    <button class="floating-tool-btn" id="tool-mask" title="切换顶层遮罩">遮罩</button>
-                    <button class="floating-tool-btn" id="tool-lang" title="中英切换">中/EN</button>
-                </div>
-
-                <!-- 右上角悬浮工具圆钮 (横排布局，不挡公式) -->
-                <div class="top-right-tools">
-                    <button class="floating-tool-btn highlight" id="tool-next" title="下一个公式">切换</button>
-                    <button class="floating-tool-btn" id="tool-list" title="公式列表">列表</button>
-                    <button class="floating-tool-btn" id="tool-reset" title="重置状态">重置</button>
-                </div>
-
-                <!-- 3D Twisty Player (近景超清晰特写: camera-distance="3.6") -->
                 <twisty-player
                     id="cube-player"
                     class="cube-player"
@@ -10511,25 +10567,34 @@ twisty-alg-viewer {
                     tempo-scale="2.5"
                 ></twisty-player>
             </div>
-
-
         </div>
 
-        <!-- 3. 下方控制区 (对齐 ControlSwitch & PlaybackControl) -->
+        <!-- 3. 下方控制区 (全部控件集中在此，字号统一 >= 14px) -->
         <div class="controls-section">
-            <!-- 分段分类切换 -->
-            <div class="control-switch" id="type-switch">
-                <button class="switch-btn" data-type="F2L">F2L (41)</button>
-                <button class="switch-btn active" data-type="OLL">OLL (57)</button>
-                <button class="switch-btn" data-type="PLL">PLL (21)</button>
+            <!-- 第 1 行：分类 Tab 切换 + 当前公式选择器与切题按钮 -->
+            <div class="case-nav-row">
+                <div class="control-switch" id="type-switch">
+                    <button class="switch-btn active" data-type="F2L">F2L</button>
+                    <button class="switch-btn" data-type="OLL">OLL</button>
+                    <button class="switch-btn" data-type="PLL">PLL</button>
+                </div>
+                <div class="case-selector-group">
+                    <button class="case-nav-btn" id="btn-case-prev" title="上一个公式" aria-label="上一个公式">‹</button>
+                    <button class="case-selector-btn" id="btn-case-select" title="打开公式列表" aria-label="选择公式">
+                        <span class="case-badge" id="case-badge-id">F2L-01</span>
+                        <span class="case-name" id="case-badge-name">简单标态</span>
+                        <span class="case-dropdown-arrow">▾</span>
+                    </button>
+                    <button class="case-nav-btn" id="btn-case-next" title="下一个公式" aria-label="下一个公式">›</button>
+                </div>
             </div>
 
-            <!-- 步骤 Tokens 缎带 -->
+            <!-- 第 2 行：公式步数 Tokens 缎带 (可点击跳转单步) -->
             <div class="formula-tokens-wrap">
                 <div class="formula-tokens" id="formula-tokens"></div>
             </div>
 
-            <!-- 细进度条 -->
+            <!-- 第 3 行：细进度条 -->
             <div class="progress-bar-container">
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill"></div>
@@ -10537,27 +10602,36 @@ twisty-alg-viewer {
                 <span class="progress-text" id="progress-text">0 / 0</span>
             </div>
 
-            <!-- 圆盘步进播放器 (对齐 PlaybackControl.vue) -->
-            <div class="playback-controls">
-                <button class="pb-btn" id="pb-start" title="回到起点">⏮</button>
-                <button class="pb-btn" id="pb-prev" title="上一步">◀</button>
-                <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停">▶</button>
-                <button class="pb-btn" id="pb-next" title="下一步">▶</button>
-                <button class="pb-btn" id="pb-end" title="跳到结尾">⏭</button>
+            <!-- 第 4 行：辅助工具栏与播放控制器 -->
+            <div class="bottom-action-row">
+                <!-- 辅助工具 (遮罩、视角、语言) -->
+                <div class="aux-tools-group">
+                    <button class="aux-btn active" id="tool-mask" title="切换顶层遮罩">遮罩</button>
+                    <button class="aux-btn" id="tool-view" title="复位视角">视角</button>
+                    <button class="aux-btn" id="tool-lang" title="中英切换">中/EN</button>
+                </div>
+
+                <!-- 步进与播放器 -->
+                <div class="playback-controls">
+                    <button class="pb-btn" id="pb-start" title="回到起点" aria-label="回到起点">⏮</button>
+                    <button class="pb-btn" id="pb-prev" title="上一步" aria-label="上一步">◀</button>
+                    <button class="pb-btn pb-btn-play" id="pb-play" title="播放/暂停" aria-label="播放或暂停">▶</button>
+                    <button class="pb-btn" id="pb-next" title="下一步" aria-label="下一步">▶</button>
+                    <button class="pb-btn" id="pb-end" title="跳到结尾" aria-label="跳到结尾">⏭</button>
+                </div>
             </div>
         </div>
 
-        <!-- 4. 公式列表选择弹窗 (Sheet) -->
+        <!-- 4. 公式列表选择抽屉 (Modal Sheet) -->
         <div class="case-modal-overlay" id="case-modal">
             <div class="case-modal-sheet">
                 <div class="modal-header">
-                    <span class="modal-title" id="modal-title">选择公式</span>
-                    <button class="modal-close-btn" id="btn-modal-close">✕</button>
+                    <span class="modal-title" id="modal-title">选择公式 (OLL)</span>
+                    <button class="modal-close-btn" id="btn-modal-close" aria-label="关闭">✕</button>
                 </div>
                 <div class="modal-grid" id="modal-grid"></div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -11561,11 +11635,10 @@ twisty-alg-viewer {
     };
 
 
-/* ── 状态管理 ── */
+    /* ── 状态管理 ── */
     var state = {
-        currentType: 'OLL',
+        currentType: 'F2L',
         currentCaseIndex: 0,
-        displayMode: 'solution',
         showChinese: false,
         maskEnabled: true,
         tokens: [],
@@ -11581,14 +11654,12 @@ twisty-alg-viewer {
 
     /* ── DOM 引用 ── */
     var player = document.getElementById('cube-player');
-    var formulaCard = document.getElementById('formula-card');
-    var cardCaseId = document.getElementById('card-case-id');
-    var cardCaseName = document.getElementById('card-case-name');
-    var cardCaseGroup = document.getElementById('card-case-group');
-    var formulaText = document.getElementById('formula-text');
-    var modeBadge = document.getElementById('mode-badge');
-    var hintToggleMode = document.getElementById('hint-toggle-mode');
-    var stepHintCn = document.getElementById('step-hint-cn');
+    var caseBadgeId = document.getElementById('case-badge-id');
+    var caseBadgeName = document.getElementById('case-badge-name');
+    var btnCaseSelect = document.getElementById('btn-case-select');
+    var btnCasePrev = document.getElementById('btn-case-prev');
+    var btnCaseNext = document.getElementById('btn-case-next');
+
     var formulaTokensEl = document.getElementById('formula-tokens');
     var progressFill = document.getElementById('progress-fill');
     var progressText = document.getElementById('progress-text');
@@ -11599,19 +11670,125 @@ twisty-alg-viewer {
     var btnStart = document.getElementById('pb-start');
     var btnEnd = document.getElementById('pb-end');
 
-    var toolView = document.getElementById('tool-view');
     var toolMask = document.getElementById('tool-mask');
+    var toolView = document.getElementById('tool-view');
     var toolLang = document.getElementById('tool-lang');
-    var toolNext = document.getElementById('tool-next');
-    var toolList = document.getElementById('tool-list');
-    var toolReset = document.getElementById('tool-reset');
 
     var caseModal = document.getElementById('case-modal');
     var modalGrid = document.getElementById('modal-grid');
     var modalTitle = document.getElementById('modal-title');
     var btnModalClose = document.getElementById('btn-modal-close');
 
+    /* ── 规则提示气泡交互 (对齐 layout.html 官方规范) ── */
+    var tipsTrigger = document.getElementById('vc-component-tips');
+    var tipsTooltip = document.getElementById('vc-component-tips-tooltip');
+    var tipsBoundary = document.getElementById('vc-container');
+    var isPC = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    var TIPS_PADDING = 12;
 
+    function getBoundaryRect() {
+        return tipsBoundary
+            ? tipsBoundary.getBoundingClientRect()
+            : { left: 0, right: window.innerWidth || document.documentElement.clientWidth };
+    }
+
+    function showTipsTooltip() {
+        if (!tipsTooltip) return;
+        tipsTooltip.style.marginLeft = '';
+        tipsTooltip.style.removeProperty('--vc-tooltip-arrow-shift');
+        var boundary = getBoundaryRect();
+        tipsTooltip.style.setProperty(
+            '--vc-tooltip-max-width',
+            (boundary.right - boundary.left - TIPS_PADDING * 2) + 'px'
+        );
+        tipsTooltip.classList.add('visible');
+        (window.requestAnimationFrame || function (cb) { return setTimeout(cb, 0); })(adjustTipsTooltipPosition);
+    }
+
+    function adjustTipsTooltipPosition() {
+        if (!tipsTooltip || !tipsTooltip.classList.contains('visible')) return;
+        var rect = tipsTooltip.getBoundingClientRect();
+        var boundary = getBoundaryRect();
+        var shift = 0;
+        if (rect.right > boundary.right - TIPS_PADDING) {
+            shift = -(rect.right - (boundary.right - TIPS_PADDING));
+        } else if (rect.left < boundary.left + TIPS_PADDING) {
+            shift = (boundary.left + TIPS_PADDING) - rect.left;
+        }
+        if (shift !== 0) {
+            tipsTooltip.style.marginLeft = shift + 'px';
+            tipsTooltip.style.setProperty('--vc-tooltip-arrow-shift', (-shift) + 'px');
+        }
+    }
+
+    function hideTipsTooltip() {
+        if (!tipsTooltip) return;
+        tipsTooltip.classList.remove('visible');
+        tipsTooltip.style.marginLeft = '';
+        tipsTooltip.style.removeProperty('--vc-tooltip-arrow-shift');
+        tipsTooltip.style.removeProperty('--vc-tooltip-max-width');
+    }
+
+    function toggleTipsTooltip() {
+        if (tipsTooltip && tipsTooltip.classList.contains('visible')) {
+            hideTipsTooltip();
+        } else {
+            showTipsTooltip();
+        }
+    }
+
+    if (tipsTrigger && tipsTooltip) {
+        if (isPC) {
+            tipsTrigger.addEventListener('mouseenter', showTipsTooltip);
+            tipsTrigger.addEventListener('mouseleave', hideTipsTooltip);
+            tipsTrigger.addEventListener('focus', showTipsTooltip);
+            tipsTrigger.addEventListener('blur', hideTipsTooltip);
+        } else {
+            tipsTrigger.addEventListener('click', function (evt) {
+                evt.stopPropagation();
+                toggleTipsTooltip();
+            });
+            document.addEventListener('click', hideTipsTooltip);
+            tipsTooltip.addEventListener('click', function (evt) {
+                evt.stopPropagation();
+            });
+        }
+    }
+
+    /* ── 表头重置按钮 (计算演示类必选，对齐 layout.html) ── */
+    var resetTrigger = document.getElementById('vc-component-reset');
+    var resetIcon = resetTrigger && resetTrigger.querySelector('.cos-icon-refresh');
+
+    function spinResetIcon() {
+        if (!resetIcon) return;
+        resetIcon.classList.remove('vc-component-icon-rotating');
+        void resetIcon.offsetWidth;
+        resetIcon.classList.add('vc-component-icon-rotating');
+    }
+
+    function handleReset() {
+        spinResetIcon();
+        if (player) {
+            if (state.isPlaying && typeof player.pause === 'function') {
+                player.pause();
+            }
+            player.setAttribute('camera-latitude', '25');
+            player.setAttribute('camera-longitude', '20');
+            player.setAttribute('camera-distance', '5.2');
+        }
+        state.isPlaying = false;
+        jumpToStep(0);
+        sendLog('operation');
+    }
+
+    if (resetTrigger) {
+        resetTrigger.addEventListener('click', function (evt) {
+            evt.stopPropagation();
+            handleReset();
+        });
+    }
+
+    /* ── 公式解析与名称逻辑 ── */
     function parseTokens(algStr) {
         return algStr.replace(/[()]/g, '').trim().split(/\s+/).filter(Boolean);
     }
@@ -11636,41 +11813,17 @@ twisty-alg-viewer {
         state.currentStep = 0;
         if (!keepPlayState) state.isPlaying = false;
 
-        if (cardCaseId) cardCaseId.textContent = item.id;
-        if (cardCaseName) cardCaseName.textContent = state.showChinese ? item.cn : item.en;
-        if (cardCaseGroup) cardCaseGroup.textContent = item.group || '';
+        if (caseBadgeId) caseBadgeId.textContent = item.id;
+        if (caseBadgeName) caseBadgeName.textContent = state.showChinese ? item.cn : item.cn;
 
-        renderFormulaDisplay();
         renderTokensRibbon();
         updateProgressUI();
         updatePlayBtnUI();
         applyCubeState();
     }
 
-    function renderFormulaDisplay() {
-        if (!formulaCard || !formulaText) return;
-        var item = getCurrentCase();
-        var isSol = state.displayMode === 'solution';
-
-        formulaCard.className = 'formula-area ' + (isSol ? 'solution-active' : '');
-        if (modeBadge) {
-            modeBadge.className = 'mode-badge ' + (isSol ? 'solution' : 'scramble');
-            modeBadge.textContent = isSol ? '解法' : '打乱';
-        }
-        if (hintToggleMode) {
-            hintToggleMode.textContent = isSol ? '切打乱' : '切解法';
-        }
-
-        var moves = state.tokens;
-        var html = '';
-        moves.forEach(function (m) {
-            html += '<span class="formula-move">' + formatMove(m) + '</span>';
-        });
-        formulaText.className = 'formula-text ' + (isSol ? 'solution' : 'scramble');
-        formulaText.innerHTML = html;
-    }
-
     function renderTokensRibbon() {
+        if (!formulaTokensEl) return;
         var moves = state.tokens;
         var html = '';
         moves.forEach(function (m, idx) {
@@ -11682,20 +11835,9 @@ twisty-alg-viewer {
             } else {
                 cls += 'move-pending';
             }
-            html += '<button class="' + cls + '" data-step="' + idx + '">' + formatMove(m) + '</button>';
+            html += '<button class="' + cls + '" data-step="' + idx + '" aria-label="第' + (idx + 1) + '步: ' + m + '">' + formatMove(m) + '</button>';
         });
         formulaTokensEl.innerHTML = html;
-
-        if (stepHintCn) {
-            if (state.currentStep >= 0 && state.currentStep < state.tokens.length) {
-                var currentMove = state.tokens[state.currentStep];
-                stepHintCn.textContent = '当前第 ' + (state.currentStep + 1) + ' 步: ' + currentMove + ' (' + (CHINESE_MOVE_NAMES[currentMove] || '转动') + ')';
-            } else if (state.currentStep >= state.tokens.length) {
-                stepHintCn.textContent = '🎉 公式演示完成！';
-            } else {
-                stepHintCn.textContent = '点击播放或步进练习';
-            }
-        }
 
         var tokenBtns = formulaTokensEl.querySelectorAll('.move-token');
         tokenBtns.forEach(function (btn) {
@@ -11708,6 +11850,7 @@ twisty-alg-viewer {
     }
 
     function updateProgressUI() {
+        if (!progressFill || !progressText) return;
         var total = state.tokens.length;
         var cur = state.currentStep;
         var pct = total === 0 ? 0 : Math.min(100, Math.round((cur / total) * 100));
@@ -11716,6 +11859,7 @@ twisty-alg-viewer {
     }
 
     function updatePlayBtnUI() {
+        if (!btnPlay) return;
         if (state.isPlaying) {
             btnPlay.classList.add('playing');
             btnPlay.textContent = '⏸';
@@ -11776,22 +11920,16 @@ twisty-alg-viewer {
         if (state.maskEnabled) {
             var customMask = item.mask;
             var stepType = (state.currentType || '').toUpperCase();
-            var MASK_MAP = {
-                'FB': 'FirstBlock',
-                'SB': 'SecondBlock',
-                'LSE': 'L6E',
-                'CMLL': 'CMLL'
-            };
-            var stickering = customMask || MASK_MAP[stepType] || stepType;
+            var stickering = customMask || stepType;
             if (stickering) {
                 player.setAttribute('experimental-stickering', stickering);
             } else {
                 player.removeAttribute('experimental-stickering');
             }
-            toolMask.classList.add('active');
+            if (toolMask) toolMask.classList.add('active');
         } else {
             player.removeAttribute('experimental-stickering');
-            toolMask.classList.remove('active');
+            if (toolMask) toolMask.classList.remove('active');
         }
 
         player.setAttribute('alg', item.alg);
@@ -11825,117 +11963,142 @@ twisty-alg-viewer {
         updateProgressUI();
     }
 
-    /* ── 事件监听 ── */
-    btnPlay.addEventListener('click', function () {
-        if (!player) return;
-        if (state.isPlaying) {
-            if (typeof player.pause === 'function') player.pause();
-            state.isPlaying = false;
-        } else {
-            if (state.currentStep >= state.tokens.length) {
-                if (typeof player.jumpToStart === 'function') player.jumpToStart();
-                state.currentStep = 0;
+    /* ── 播放器事件 ── */
+    if (btnPlay) {
+        btnPlay.addEventListener('click', function () {
+            if (!player) return;
+            if (state.isPlaying) {
+                if (typeof player.pause === 'function') player.pause();
+                state.isPlaying = false;
+            } else {
+                if (state.currentStep >= state.tokens.length) {
+                    if (typeof player.jumpToStart === 'function') player.jumpToStart();
+                    state.currentStep = 0;
+                }
+                if (typeof player.play === 'function') player.play();
+                state.isPlaying = true;
             }
-            if (typeof player.play === 'function') player.play();
-            state.isPlaying = true;
-        }
-        updatePlayBtnUI();
-        sendLog('operation');
-    });
-
-    btnPrev.addEventListener('click', function () {
-        if (!player) return;
-        state.isPlaying = false;
-        updatePlayBtnUI();
-        if (player.controller && player.controller.animationController) {
-            player.controller.animationController.play({ direction: -1, untilBoundary: 1 });
-        } else if (typeof player.stepBackward === 'function') {
-            player.stepBackward();
-        }
-        if (state.currentStep > 0) state.currentStep--;
-        renderTokensRibbon();
-        updateProgressUI();
-        sendLog('operation');
-    });
-
-    btnNext.addEventListener('click', function () {
-        if (!player) return;
-        state.isPlaying = false;
-        updatePlayBtnUI();
-        if (player.controller && player.controller.animationController) {
-            player.controller.animationController.play({ direction: 1, untilBoundary: 1 });
-        } else if (typeof player.stepForward === 'function') {
-            player.stepForward();
-        }
-        if (state.currentStep < state.tokens.length) state.currentStep++;
-        renderTokensRibbon();
-        updateProgressUI();
-        sendLog('operation');
-    });
-
-    btnStart.addEventListener('click', function () {
-        if (!player) return;
-        state.isPlaying = false;
-        updatePlayBtnUI();
-        if (typeof player.jumpToStart === 'function') player.jumpToStart();
-        state.currentStep = 0;
-        renderTokensRibbon();
-        updateProgressUI();
-        sendLog('operation');
-    });
-
-    btnEnd.addEventListener('click', function () {
-        if (!player) return;
-        state.isPlaying = false;
-        updatePlayBtnUI();
-        if (typeof player.jumpToEnd === 'function') player.jumpToEnd();
-        state.currentStep = state.tokens.length;
-        renderTokensRibbon();
-        updateProgressUI();
-        sendLog('operation');
-    });
-
-    toolView.addEventListener('click', function () {
-        if (!player) return;
-        player.setAttribute('camera-latitude', '25');
-        player.setAttribute('camera-longitude', '20');
-        player.setAttribute('camera-distance', '5.2');
-        sendLog('operation');
-    });
-
-    toolMask.addEventListener('click', function () {
-        state.maskEnabled = !state.maskEnabled;
-        applyCubeState();
-        sendLog('operation');
-    });
-
-    toolLang.addEventListener('click', function () {
-        state.showChinese = !state.showChinese;
-        toolLang.classList.toggle('active', state.showChinese);
-        loadCurrentCase(true);
-        sendLog('operation');
-    });
-
-    toolNext.addEventListener('click', function () {
-        var list = FORMULA_DATABASE[state.currentType] || [];
-        state.currentCaseIndex = (state.currentCaseIndex + 1) % list.length;
-        loadCurrentCase();
-        sendLog('operation');
-    });
-
-    toolReset.addEventListener('click', function () {
-        jumpToStep(0);
-        sendLog('operation');
-    });
-
-    if (formulaCard) {
-        formulaCard.addEventListener('click', function () {
-            state.displayMode = state.displayMode === 'solution' ? 'scramble' : 'solution';
-            renderFormulaDisplay();
+            updatePlayBtnUI();
             sendLog('operation');
         });
     }
 
+    if (btnPrev) {
+        btnPrev.addEventListener('click', function () {
+            if (!player) return;
+            state.isPlaying = false;
+            updatePlayBtnUI();
+            if (player.controller && player.controller.animationController) {
+                player.controller.animationController.play({ direction: -1, untilBoundary: 1 });
+            } else if (typeof player.stepBackward === 'function') {
+                player.stepBackward();
+            }
+            if (state.currentStep > 0) state.currentStep--;
+            renderTokensRibbon();
+            updateProgressUI();
+            sendLog('operation');
+        });
+    }
+
+    if (btnNext) {
+        btnNext.addEventListener('click', function () {
+            if (!player) return;
+            state.isPlaying = false;
+            updatePlayBtnUI();
+            if (player.controller && player.controller.animationController) {
+                player.controller.animationController.play({ direction: 1, untilBoundary: 1 });
+            } else if (typeof player.stepForward === 'function') {
+                player.stepForward();
+            }
+            if (state.currentStep < state.tokens.length) state.currentStep++;
+            renderTokensRibbon();
+            updateProgressUI();
+            sendLog('operation');
+        });
+    }
+
+    if (btnStart) {
+        btnStart.addEventListener('click', function () {
+            if (!player) return;
+            state.isPlaying = false;
+            updatePlayBtnUI();
+            if (typeof player.jumpToStart === 'function') player.jumpToStart();
+            state.currentStep = 0;
+            renderTokensRibbon();
+            updateProgressUI();
+            sendLog('operation');
+        });
+    }
+
+    if (btnEnd) {
+        btnEnd.addEventListener('click', function () {
+            if (!player) return;
+            state.isPlaying = false;
+            updatePlayBtnUI();
+            if (typeof player.jumpToEnd === 'function') player.jumpToEnd();
+            state.currentStep = state.tokens.length;
+            renderTokensRibbon();
+            updateProgressUI();
+            sendLog('operation');
+        });
+    }
+
+    /* ── 辅助工具按钮 ── */
+    if (toolView) {
+        toolView.addEventListener('click', function () {
+            if (!player) return;
+            player.setAttribute('camera-latitude', '25');
+            player.setAttribute('camera-longitude', '20');
+            player.setAttribute('camera-distance', '5.2');
+            sendLog('operation');
+        });
+    }
+
+    if (toolMask) {
+        toolMask.addEventListener('click', function () {
+            state.maskEnabled = !state.maskEnabled;
+            applyCubeState();
+            sendLog('operation');
+        });
+    }
+
+    if (toolLang) {
+        toolLang.addEventListener('click', function () {
+            state.showChinese = !state.showChinese;
+            toolLang.classList.toggle('active', state.showChinese);
+            loadCurrentCase(true);
+            sendLog('operation');
+        });
+    }
+
+    /* ── 公式切换与选公式 ── */
+    if (btnCasePrev) {
+        btnCasePrev.addEventListener('click', function () {
+            var list = FORMULA_DATABASE[state.currentType] || [];
+            state.currentCaseIndex = (state.currentCaseIndex - 1 + list.length) % list.length;
+            loadCurrentCase();
+            sendLog('operation');
+        });
+    }
+
+    if (btnCaseNext) {
+        btnCaseNext.addEventListener('click', function () {
+            var list = FORMULA_DATABASE[state.currentType] || [];
+            state.currentCaseIndex = (state.currentCaseIndex + 1) % list.length;
+            loadCurrentCase();
+            sendLog('operation');
+        });
+    }
+
+    if (btnCaseSelect) {
+        btnCaseSelect.addEventListener('click', function () {
+            renderModalGrid();
+            caseModal.classList.add('open');
+            sendLog('operation');
+        });
+    }
+
+    /* ── 分类 Tabs 切换 ── */
     var switchBtns = document.querySelectorAll('#type-switch .switch-btn');
     switchBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -11948,23 +12111,23 @@ twisty-alg-viewer {
         });
     });
 
-    toolList.addEventListener('click', function () {
-        renderModalGrid();
-        caseModal.classList.add('open');
-        sendLog('operation');
-    });
-
-    btnModalClose.addEventListener('click', function () {
-        caseModal.classList.remove('open');
-    });
-
-    caseModal.addEventListener('click', function (e) {
-        if (e.target === caseModal) {
+    /* ── 弹窗抽屉 ── */
+    if (btnModalClose) {
+        btnModalClose.addEventListener('click', function () {
             caseModal.classList.remove('open');
-        }
-    });
+        });
+    }
+
+    if (caseModal) {
+        caseModal.addEventListener('click', function (e) {
+            if (e.target === caseModal) {
+                caseModal.classList.remove('open');
+            }
+        });
+    }
 
     function renderModalGrid() {
+        if (!modalTitle || !modalGrid) return;
         modalTitle.textContent = '选择公式 (' + state.currentType + ')';
         var list = FORMULA_DATABASE[state.currentType] || [];
         var html = '';
@@ -11972,7 +12135,7 @@ twisty-alg-viewer {
             var isSel = idx === state.currentCaseIndex;
             html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
             html += '  <div class="modal-item-id">' + item.id + '</div>';
-            html += '  <div class="modal-item-name">' + (state.showChinese ? item.cn : item.en) + '</div>';
+            html += '  <div class="modal-item-name">' + (state.showChinese ? item.cn : item.cn) + '</div>';
             html += '</div>';
         });
         modalGrid.innerHTML = html;
@@ -11989,9 +12152,15 @@ twisty-alg-viewer {
         });
     }
 
-
-
+    /* ── 监听 3D 组件注册完毕并精准执行首屏打乱与朝向 ── */
     customElements.whenDefined('twisty-player').then(function () {
+        loadCurrentCase();
+        setTimeout(function () {
+            if (typeof player.jumpToStart === 'function') {
+                player.jumpToStart();
+            }
+        }, 50);
+
         var timeline = player.experimentalModel && player.experimentalModel.coarseTimelineInfo;
         if (timeline && typeof timeline.subscribe === 'function') {
             timeline.subscribe(function (info) {
