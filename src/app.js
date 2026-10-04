@@ -177,7 +177,7 @@
         if (!keepPlayState) state.isPlaying = false;
 
         if (caseBadgeId) caseBadgeId.textContent = item.id;
-        if (caseBadgeName) caseBadgeName.textContent = state.showChinese ? item.cn : item.cn;
+        if (caseBadgeName) caseBadgeName.textContent = item.cn;
 
         renderTokensRibbon();
         updateProgressUI();
@@ -429,7 +429,7 @@
         toolLang.addEventListener('click', function () {
             state.showChinese = !state.showChinese;
             toolLang.classList.toggle('active', state.showChinese);
-            loadCurrentCase(true);
+            renderTokensRibbon();
             sendLog('operation');
         });
     }
@@ -498,7 +498,7 @@
             var isSel = idx === state.currentCaseIndex;
             html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
             html += '  <div class="modal-item-id">' + item.id + '</div>';
-            html += '  <div class="modal-item-name">' + (state.showChinese ? item.cn : item.cn) + '</div>';
+            html += '  <div class="modal-item-name">' + item.cn + '</div>';
             html += '</div>';
         });
         modalGrid.innerHTML = html;

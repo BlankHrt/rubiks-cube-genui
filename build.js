@@ -42,11 +42,16 @@ function build() {
             fs.cpSync(SRC_DIR, destSrc, { recursive: true, force: true });
             fs.copyFileSync(path.join(ROOT_DIR, 'build.js'), path.join(standaloneDir, 'build.js'));
             fs.copyFileSync(path.join(ROOT_DIR, 'package.json'), path.join(standaloneDir, 'package.json'));
-            if (fs.existsSync(path.join(ROOT_DIR, 'README.md'))) {
-                fs.copyFileSync(path.join(ROOT_DIR, 'README.md'), path.join(standaloneDir, 'README.md'));
+            const filesToSync = ['app.json', 'logo.png', 'logo.jpg', 'README.md', 'README_ZH.md', 'LICENSE'];
+            for (const file of filesToSync) {
+                const srcPath = path.join(ROOT_DIR, file);
+                if (fs.existsSync(srcPath)) {
+                    fs.copyFileSync(srcPath, path.join(standaloneDir, file));
+                }
             }
-            if (fs.existsSync(path.join(ROOT_DIR, 'README_ZH.md'))) {
-                fs.copyFileSync(path.join(ROOT_DIR, 'README_ZH.md'), path.join(standaloneDir, 'README_ZH.md'));
+            const staticDir = path.join(ROOT_DIR, 'static');
+            if (fs.existsSync(staticDir)) {
+                fs.cpSync(staticDir, path.join(standaloneDir, 'static'), { recursive: true, force: true });
             }
         }
 

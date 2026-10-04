@@ -6,7 +6,8 @@
     "build": "node build.js",
     "watch": "node build.js --watch",
     "check": "npx @cosui/genui-toolkit check ./index.html",
-    "preview": "npx @cosui/genui-toolkit preview"
+    "preview": "npx @cosui/genui-toolkit preview",
+    "sync:github": "node sync-github.mjs"
   },
   "keywords": [
     "genui",

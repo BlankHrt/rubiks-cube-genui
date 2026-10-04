@@ -10604,11 +10604,11 @@ twisty-alg-viewer {
 
             <!-- 第 4 行：辅助工具栏与播放控制器 -->
             <div class="bottom-action-row">
-                <!-- 辅助工具 (遮罩、视角、语言) -->
+                <!-- 辅助工具 (遮罩、视角、手法) -->
                 <div class="aux-tools-group">
                     <button class="aux-btn active" id="tool-mask" title="切换顶层遮罩">遮罩</button>
                     <button class="aux-btn" id="tool-view" title="复位视角">视角</button>
-                    <button class="aux-btn" id="tool-lang" title="中英切换">中/EN</button>
+                    <button class="aux-btn" id="tool-lang" title="切换转动手势代码(英文/中文)">手法</button>
                 </div>
 
                 <!-- 步进与播放器 -->
@@ -11814,7 +11814,7 @@ twisty-alg-viewer {
         if (!keepPlayState) state.isPlaying = false;
 
         if (caseBadgeId) caseBadgeId.textContent = item.id;
-        if (caseBadgeName) caseBadgeName.textContent = state.showChinese ? item.cn : item.cn;
+        if (caseBadgeName) caseBadgeName.textContent = item.cn;
 
         renderTokensRibbon();
         updateProgressUI();
@@ -12066,7 +12066,7 @@ twisty-alg-viewer {
         toolLang.addEventListener('click', function () {
             state.showChinese = !state.showChinese;
             toolLang.classList.toggle('active', state.showChinese);
-            loadCurrentCase(true);
+            renderTokensRibbon();
             sendLog('operation');
         });
     }
@@ -12135,7 +12135,7 @@ twisty-alg-viewer {
             var isSel = idx === state.currentCaseIndex;
             html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
             html += '  <div class="modal-item-id">' + item.id + '</div>';
-            html += '  <div class="modal-item-name">' + (state.showChinese ? item.cn : item.cn) + '</div>';
+            html += '  <div class="modal-item-name">' + item.cn + '</div>';
             html += '</div>';
         });
         modalGrid.innerHTML = html;
