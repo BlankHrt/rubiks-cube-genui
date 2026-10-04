@@ -258,26 +258,27 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
 }
 
 .control-switch {
     display: flex;
-    gap: 3px;
+    gap: 2px;
     padding: 2px;
     background: rgba(255, 255, 255, 0.04);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
 }
 
 .switch-btn {
-    height: 28px;
-    padding: 0 10px;
+    height: 30px;
+    padding: 0 8px;
     border: none;
     background: transparent;
     border-radius: 6px;
     color: #9da4b4;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -297,11 +298,14 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-end;
 }
 
 .case-nav-btn {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 30px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -313,6 +317,7 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: all 0.15s ease;
+    flex-shrink: 0;
 }
 
 .case-nav-btn:hover {
@@ -324,7 +329,7 @@ body {
 }
 
 .case-selector-btn {
-    height: 28px;
+    height: 30px;
     padding: 0 8px;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.06);
@@ -334,6 +339,9 @@ body {
     gap: 6px;
     cursor: pointer;
     transition: all 0.15s ease;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
 }
 
 .case-selector-btn:hover {
@@ -346,25 +354,27 @@ body {
 }
 
 .case-badge {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #38bdf8;
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    flex-shrink: 0;
 }
 
 .case-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: #F0F0F5;
-    max-width: 80px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #e2e8f0;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 0;
 }
 
 .case-dropdown-arrow {
-    font-size: 14px;
+    font-size: 11px;
     color: #8c93a0;
+    flex-shrink: 0;
 }
 
 /* 第 2 行：公式步数 Tokens 缎带 */
@@ -626,8 +636,8 @@ body {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     overflow-y: auto;
-    max-height: 220px;
-    padding: 2px;
+    max-height: 250px;
+    padding: 2px 2px 6px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     overscroll-behavior: contain;
@@ -642,10 +652,15 @@ body {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 8px;
-    padding: 8px 6px;
+    padding: 8px 4px;
     cursor: pointer;
     text-align: center;
     transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
 }
 
 .modal-case-item:hover {
@@ -655,21 +670,29 @@ body {
 .modal-case-item.selected {
     background: rgba(254, 44, 85, 0.15);
     border-color: #FE2C55;
+}
+
+.modal-case-item.selected .modal-item-id,
+.modal-case-item.selected .modal-item-name {
     color: #FE2C55;
 }
 
 .modal-item-id {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
+    color: #38bdf8;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
     margin-bottom: 2px;
+    white-space: nowrap;
 }
 
 .modal-item-name {
-    font-size: 14px;
-    color: #8c93a0;
+    font-size: 12px;
+    color: #94a3b8;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
     </style>
@@ -11805,6 +11828,28 @@ twisty-alg-viewer {
         return move;
     }
 
+    function getCasePureName(item) {
+        if (!item) return '';
+        var m = item.cn && item.cn.match(/\(([^)]+)\)/);
+        if (m && m[1]) return m[1].trim();
+        if (item.group) return item.group;
+        return item.cn || item.en || '';
+    }
+
+    function getCaseDisplayId(item) {
+        if (!item) return '';
+        if (state.currentType === 'F2L') {
+            if (item.en) {
+                var num = item.en.replace(/[^\d]/g, '');
+                if (num) {
+                    var padded = num.length === 1 ? '0' + num : num;
+                    return 'F2L-' + padded;
+                }
+            }
+        }
+        return item.id;
+    }
+
     function loadCurrentCase(keepPlayState) {
         var item = getCurrentCase();
         if (!item) return;
@@ -11813,8 +11858,8 @@ twisty-alg-viewer {
         state.currentStep = 0;
         if (!keepPlayState) state.isPlaying = false;
 
-        if (caseBadgeId) caseBadgeId.textContent = item.id;
-        if (caseBadgeName) caseBadgeName.textContent = item.cn;
+        if (caseBadgeId) caseBadgeId.textContent = getCaseDisplayId(item);
+        if (caseBadgeName) caseBadgeName.textContent = getCasePureName(item);
 
         renderTokensRibbon();
         updateProgressUI();
@@ -12133,9 +12178,11 @@ twisty-alg-viewer {
         var html = '';
         list.forEach(function (item, idx) {
             var isSel = idx === state.currentCaseIndex;
+            var displayId = getCaseDisplayId(item);
+            var pureName = getCasePureName(item);
             html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
-            html += '  <div class="modal-item-id">' + item.id + '</div>';
-            html += '  <div class="modal-item-name">' + item.cn + '</div>';
+            html += '  <div class="modal-item-id">' + displayId + '</div>';
+            html += '  <div class="modal-item-name">' + pureName + '</div>';
             html += '</div>';
         });
         modalGrid.innerHTML = html;

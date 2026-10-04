@@ -168,6 +168,28 @@
         return move;
     }
 
+    function getCasePureName(item) {
+        if (!item) return '';
+        var m = item.cn && item.cn.match(/\(([^)]+)\)/);
+        if (m && m[1]) return m[1].trim();
+        if (item.group) return item.group;
+        return item.cn || item.en || '';
+    }
+
+    function getCaseDisplayId(item) {
+        if (!item) return '';
+        if (state.currentType === 'F2L') {
+            if (item.en) {
+                var num = item.en.replace(/[^\d]/g, '');
+                if (num) {
+                    var padded = num.length === 1 ? '0' + num : num;
+                    return 'F2L-' + padded;
+                }
+            }
+        }
+        return item.id;
+    }
+
     function loadCurrentCase(keepPlayState) {
         var item = getCurrentCase();
         if (!item) return;
@@ -176,8 +198,8 @@
         state.currentStep = 0;
         if (!keepPlayState) state.isPlaying = false;
 
-        if (caseBadgeId) caseBadgeId.textContent = item.id;
-        if (caseBadgeName) caseBadgeName.textContent = item.cn;
+        if (caseBadgeId) caseBadgeId.textContent = getCaseDisplayId(item);
+        if (caseBadgeName) caseBadgeName.textContent = getCasePureName(item);
 
         renderTokensRibbon();
         updateProgressUI();
@@ -496,9 +518,11 @@
         var html = '';
         list.forEach(function (item, idx) {
             var isSel = idx === state.currentCaseIndex;
+            var displayId = getCaseDisplayId(item);
+            var pureName = getCasePureName(item);
             html += '<div class="modal-case-item ' + (isSel ? 'selected' : '') + '" data-idx="' + idx + '">';
-            html += '  <div class="modal-item-id">' + item.id + '</div>';
-            html += '  <div class="modal-item-name">' + item.cn + '</div>';
+            html += '  <div class="modal-item-id">' + displayId + '</div>';
+            html += '  <div class="modal-item-name">' + pureName + '</div>';
             html += '</div>';
         });
         modalGrid.innerHTML = html;
