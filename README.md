@@ -27,7 +27,7 @@
 It features full 3D interactive cube playback, gesture rotation, complete CFOP formula stages (41 F2L + 57 OLL + 21 PLL = 119 cases), and built-in **AI Agent Skills** (`.agents/skills`) that teach AI coding assistants (such as Antigravity, Cursor, and Claude Code) how to automatically build, test, and publish interactive cards.
 
 > 🚀 **Looking for advanced algorithm training, Bluetooth Smart Cube timing, and 3D solvers?**  
-> Visit our full-featured web platform: **[iCubing.com (English)](https://www.icubing.com/en)** | **[魔方小站 (中文)](https://www.icubing.com)**
+> Visit our full-featured web platform: **[iCubing.com (English)](https://www.icubing.com/en)** | **[魔方土豆 (中文)](https://www.icubing.com)**
 
 ---
 
